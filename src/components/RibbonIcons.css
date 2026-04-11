@@ -1,0 +1,95 @@
+.ribbonIcons {
+  width: 100%;
+  margin-top: 0px;
+  display: flex;
+  justify-content: center;
+}
+
+.ribbonIcons__wrap {
+  width: fit-content; /* ⬅️ key fix */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ⬅️ center buttons */
+  gap: 12px;
+}
+
+.ribbonIcons__item {
+  border: none;
+  background: #ffffff; /* ⬅️ always black */
+  color: #000000;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ribbonIcons__item:hover {
+  background: #1b1b1b;
+   color: #ffffff;
+}
+
+.ribbonIcons__icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ribbonIcons__icon svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+@media (max-width: 768px) {
+  .ribbonIcons {
+    margin-top: 0px;
+    justify-content: flex-start; /* ⬅️ FIX: no center on mobile */
+  }
+
+  .ribbonIcons__wrap {
+    width: 100%; /* ⬅️ important */
+    overflow-x: auto;
+    display: flex;
+    justify-content: flex-start; /* ⬅️ FIX */
+    gap: 10px;
+    padding: 0 12px 6px 12px;
+
+    scroll-padding-left: 12px;
+
+    /* optional smooth feel */
+    -webkit-overflow-scrolling: touch;
+
+    /* hide scrollbar (clean UI) */
+    scrollbar-width: none;
+  }
+
+  .ribbonIcons__wrap::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ribbonIcons__item {
+    height: 46px;
+    padding: 0 16px;
+    font-size: 15px;
+    border-radius: 16px;
+    white-space: nowrap;
+    flex-shrink: 0; /* ⬅️ IMPORTANT: prevent shrinking */
+  }
+
+  .ribbonIcons__icon,
+  .ribbonIcons__icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+

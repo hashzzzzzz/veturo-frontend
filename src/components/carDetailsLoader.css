@@ -1,0 +1,376 @@
+.carDetailsLoader {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+
+.carDetailsLoader--closing {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.carDetailsLoader__backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.2), transparent 28%),
+    linear-gradient(145deg, rgba(45, 48, 53, 0.94), rgba(11, 12, 14, 0.96));
+  backdrop-filter: blur(20px);
+}
+
+.carDetailsLoader__content {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 520px);
+  padding: 30px 22px 24px;
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 34%),
+    linear-gradient(145deg, #3f4247 0%, #1b1d21 58%, #0e0f12 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.42);
+  text-align: center;
+  overflow: hidden;
+}
+
+.carDetailsLoader__content::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+.carDetailsLoader__content::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 118px;
+  width: 520px;
+  height: 160px;
+  transform: translateX(-50%);
+  background:
+    repeating-linear-gradient(
+      -12deg,
+      transparent 0 18px,
+      rgba(255, 255, 255, 0.05) 18px 20px
+    );
+  opacity: 0.4;
+  animation: carDetailsLoaderSpeedLines 0.7s linear infinite;
+  pointer-events: none;
+}
+
+.carDetailsLoader__stage {
+  position: relative;
+  height: 160px;
+  margin: 0 0 12px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.carDetailsLoader__road {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 26px;
+  height: 58px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 8%,
+      rgba(255, 255, 255, 0.96) 8% 16%,
+      transparent 16% 28%,
+      rgba(255, 255, 255, 0.96) 28% 36%,
+      transparent 36% 48%,
+      rgba(255, 255, 255, 0.96) 48% 56%,
+      transparent 56% 68%,
+      rgba(255, 255, 255, 0.96) 68% 76%,
+      transparent 76% 100%
+    ),
+    linear-gradient(180deg, #51545a 0%, #202226 48%, #101114 100%);
+  background-size: 210% 100%, 100% 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 12px 24px rgba(255, 255, 255, 0.08),
+    inset 0 -12px 26px rgba(0, 0, 0, 0.34),
+    0 20px 42px rgba(0, 0, 0, 0.28);
+  animation: carDetailsLoaderRoad 0.62s linear infinite;
+}
+
+.carDetailsLoader__glow {
+  position: absolute;
+  left: 50%;
+  bottom: 42px;
+  width: 230px;
+  height: 46px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(124, 103, 255, 0.38), transparent 68%);
+  filter: blur(10px);
+  animation: carDetailsLoaderGlow 1.5s ease-in-out infinite;
+}
+
+.carDetailsLoader__car {
+  position: absolute;
+  left: 50%;
+  bottom: 42px;
+  width: 220px;
+  height: 102px;
+  transform: translateX(-50%);
+  animation: carDetailsLoaderFloat 0.72s ease-in-out infinite;
+}
+
+.carDetailsLoader__carTop {
+  position: absolute;
+  left: 54px;
+  top: 8px;
+  width: 100px;
+  height: 34px;
+  border-radius: 24px 26px 12px 12px;
+  background: linear-gradient(180deg, #f5f5f7 0%, #bfc4ce 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+}
+
+.carDetailsLoader__carBody {
+  position: absolute;
+  left: 20px;
+  right: 14px;
+  bottom: 18px;
+  height: 52px;
+  border-radius: 26px 32px 20px 20px;
+  background: linear-gradient(135deg, #6f63ff 0%, #8f7cff 48%, #d9d6ff 100%);
+  box-shadow:
+    inset 0 -9px 18px rgba(0, 0, 0, 0.24),
+    0 12px 30px rgba(111, 99, 255, 0.26);
+}
+
+.carDetailsLoader__window {
+  position: absolute;
+  top: 18px;
+  height: 20px;
+  background: linear-gradient(180deg, #111827 0%, #2d3d58 100%);
+  border-radius: 9px;
+}
+
+.carDetailsLoader__window--front {
+  left: 104px;
+  width: 46px;
+  transform: skew(-12deg);
+}
+
+.carDetailsLoader__window--rear {
+  left: 68px;
+  width: 30px;
+  transform: skew(-8deg);
+}
+
+.carDetailsLoader__wheel {
+  position: absolute;
+  bottom: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #f4f4f5 0 14%, #7c8492 15% 24%, #111827 25% 48%, #020617 49% 100%);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  animation: carDetailsLoaderSpin 0.34s linear infinite;
+}
+
+.carDetailsLoader__wheel--left {
+  left: 46px;
+}
+
+.carDetailsLoader__wheel--right {
+  right: 34px;
+}
+
+.carDetailsLoader__beam {
+  position: absolute;
+  right: -18px;
+  top: 52px;
+  width: 100px;
+  height: 14px;
+  background: linear-gradient(90deg, rgba(245, 245, 245, 0.9), transparent);
+  clip-path: polygon(0 35%, 100% 0, 100% 100%, 0 65%);
+  filter: blur(2.5px);
+  opacity: 0.85;
+}
+
+.carDetailsLoader__car::before {
+  content: "";
+  position: absolute;
+  left: -34px;
+  top: 48px;
+  width: 62px;
+  height: 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24));
+  filter: blur(4px);
+  animation: carDetailsLoaderTail 0.45s ease-in-out infinite;
+}
+
+.carDetailsLoader__copy {
+  position: relative;
+  z-index: 1;
+  color: #ffffff;
+}
+
+.carDetailsLoader__eyebrow {
+  margin: 0 0 6px;
+  color: #c5c0ff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.carDetailsLoader__copy h1 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.carDetailsLoader__text {
+  margin: 10px 0 0;
+  color: #c6c8ce;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.carDetailsLoader__progress {
+  margin-top: 20px;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.07);
+}
+
+.carDetailsLoader__progressBar {
+  display: block;
+  width: 38%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8f7cff 0%, #ffffff 55%, #5954d8 100%);
+  box-shadow: 0 0 22px rgba(143, 124, 255, 0.42);
+  animation: carDetailsLoaderProgress 1.2s ease-in-out infinite;
+}
+
+@keyframes carDetailsLoaderSpeedLines {
+  from {
+    transform: translateX(-50%) translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%) translateX(-60px);
+  }
+}
+
+@keyframes carDetailsLoaderTail {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translateX(0) scaleX(0.88);
+  }
+
+  50% {
+    opacity: 0.58;
+    transform: translateX(-8px) scaleX(1.18);
+  }
+}
+
+@keyframes carDetailsLoaderRoad {
+  from {
+    background-position: 0 0, 0 0;
+  }
+
+  to {
+    background-position: -210% 0, 0 0;
+  }
+}
+
+@keyframes carDetailsLoaderSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes carDetailsLoaderFloat {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+@keyframes carDetailsLoaderGlow {
+  0%,
+  100% {
+    opacity: 0.38;
+    transform: translateX(-50%) scale(0.96);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1.04);
+  }
+}
+
+@keyframes carDetailsLoaderProgress {
+  0% {
+    transform: translateX(-25%);
+  }
+
+  50% {
+    transform: translateX(125%);
+  }
+
+  100% {
+    transform: translateX(-25%);
+  }
+}
+
+@media (max-width: 768px) {
+  .carDetailsLoader {
+    padding: 14px;
+  }
+
+  .carDetailsLoader__content {
+    padding: 28px 16px 20px;
+    border-radius: 24px;
+  }
+
+  .carDetailsLoader__stage {
+    height: 146px;
+  }
+
+  .carDetailsLoader__car {
+    width: 196px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carDetailsLoader__logo,
+  .carDetailsLoader__road,
+  .carDetailsLoader__glow,
+  .carDetailsLoader__car,
+  .carDetailsLoader__wheel,
+  .carDetailsLoader__progressBar {
+    animation: none;
+  }
+}

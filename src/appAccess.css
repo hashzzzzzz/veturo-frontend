@@ -1,0 +1,51 @@
+.appQuickAccess {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.appQuickAccess__btn {
+  min-width: 148px;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.appQuickAccess__btn:hover {
+  opacity: 0.94;
+  transform: translateY(-1px);
+}
+
+.appQuickAccess__btn.secondary {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #e7e7e7;
+}
+
+@media (max-width: 768px) {
+  .appQuickAccess {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .appQuickAccess__btn {
+    min-width: 132px;
+    height: 42px;
+    font-size: 13px;
+  }
+
+}

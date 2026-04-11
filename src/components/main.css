@@ -1,0 +1,559 @@
+.hero {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 0 40px;
+  position: relative;
+  z-index: 50;
+}
+
+.hero__card {
+  position: relative;
+  overflow: visible;
+  width: 100%;
+  min-height: 430px;
+  border-radius: 28px;
+  border: 1px solid #1f1f1f;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 50;
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at center, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.18)),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.22));
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 60;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 42px 26px 34px;
+  text-align: center;
+  overflow: visible;
+}
+
+.hero__text {
+  max-width: 860px;
+}
+
+.hero__eyebrow {
+  margin: 0 0 14px;
+  color: #f1f1f1;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero__title {
+  margin: 0;
+  color: #ffffff;
+  font-size: 26px;
+  line-height: 1.02;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.hero__searchWrap {
+  width: 100%;
+  max-width: 1150px;
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+  position: relative;
+  z-index: 70;
+}
+
+.hero__search {
+  width: 100%;
+  max-width: 980px;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 10px 10px 10px 18px;
+  display: grid;
+  grid-template-columns: 2.2fr 1px 1.25fr 1px 1.25fr auto;
+  align-items: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+  overflow: visible;
+  position: relative;
+  z-index: 80;
+}
+
+.search__item {
+  min-width: 0;
+  padding: 0 16px;
+  text-align: left;
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+.search__item--where {
+  padding-left: 4px;
+  overflow: visible;
+  z-index: 90;
+}
+
+.search__item label {
+  display: block;
+  margin-bottom: 6px;
+  color: #6a6a6a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.search__item input,
+.search__dateInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #1a1a1a;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 0;
+}
+
+.search__item input::placeholder,
+.search__dateInput::placeholder {
+  color: #7c7c7c;
+}
+
+.search__item span {
+  display: block;
+  margin-top: 6px;
+  color: #7c7c7c;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.search__divider {
+  width: 1px;
+  height: 54px;
+  background: #e7e7e7;
+}
+
+.search__button {
+  height: 58px;
+  min-width: 128px;
+  margin-left: 10px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #9b5cff, #6f2cff);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search__button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(111, 44, 255, 0.34);
+}
+
+/* where dropdown */
+.whereDropdownWrap {
+  position: relative;
+  overflow: visible;
+  z-index: 100;
+}
+
+.whereDropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  width: 100%;
+  min-width: 340px;
+  background: #111111;
+  border: 1px solid #242424;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  padding: 8px;
+  z-index: 99999;
+}
+
+.whereDropdown__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 8px 8px 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #242424;
+}
+
+.whereDropdown__close {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 999px;
+  background: #1b1b1b;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.whereDropdown__close:hover {
+  background: #2a2a2a;
+  transform: scale(1.04);
+}
+
+.whereDropdown__close svg {
+  width: 17px;
+  height: 17px;
+}
+
+.whereDropdown__nearby {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-bottom: 6px;
+}
+
+.whereDropdown__nearby:hover {
+  background: #1b1b1b;
+}
+
+.whereDropdown__nearbyIcon {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: #1f1f1f;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.whereDropdown__nearbyIcon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.whereDropdown__nearbyText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.whereDropdown__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 12px;
+  color: #cfcfcf;
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 1px solid #222;
+  margin-bottom: 6px;
+  cursor: default;
+  user-select: none;
+}
+
+.whereDropdown__header--cities {
+  margin-top: 8px;
+}
+
+.whereDropdown__headerIcon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #cfcfcf;
+}
+
+.whereDropdown__headerIcon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.whereDropdown__item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.whereDropdown__item:hover {
+  background: #1b1b1b;
+}
+
+.whereDropdown__item--city {
+  margin-top: 0;
+}
+
+.whereDropdown__icon {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: #1f1f1f;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.whereDropdown__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.whereDropdown__content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.whereDropdown__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.whereDropdown__subtitle {
+  font-size: 12px;
+  color: #a9a9a9;
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+/* datepicker */
+.react-datepicker-popper {
+  z-index: 99999 !important;
+  margin-top: 8px !important;
+}
+
+.react-datepicker {
+  background: #0f0f0f !important;
+  border: 1px solid #2b2b2b !important;
+  color: #ffffff !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.react-datepicker__header {
+  background: #111111 !important;
+  border-bottom: 1px solid #2b2b2b !important;
+  color: #ffffff !important;
+}
+
+.react-datepicker__current-month {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+.react-datepicker__day-name,
+.react-datepicker__day {
+  color: #d9d9d9 !important;
+}
+
+.react-datepicker__day:hover {
+  background: #1b1b1b !important;
+  color: #ffffff !important;
+}
+
+.react-datepicker__day--selected {
+  background: linear-gradient(135deg, #9b5cff, #6f2cff) !important;
+  color: #ffffff !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+.react-datepicker__day--outside-month {
+  color: #4f4f4f !important;
+}
+
+.react-datepicker__day--in-range {
+  background: rgba(155, 92, 255, 0.18) !important;
+  color: #ffffff !important;
+}
+
+.react-datepicker__triangle {
+  border-bottom-color: #0f0f0f !important;
+}
+
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  top: 8px !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #ffffff !important;
+}
+
+.react-datepicker__time-container {
+  background: #0f0f0f !important;
+  border-left: 1px solid #2b2b2b !important;
+}
+
+.whereDropdown__item--static {
+  cursor: default;
+}
+
+.whereDropdown__item--static:hover {
+  background: transparent;
+  transform: none;
+}
+.search__clearBtn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(223, 0, 0, 0.06);
+  color: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 5;
+  transition: background 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
+  opacity: 0.82;
+}
+
+.search__clearBtn:hover {
+  background: rgba(17, 17, 17, 0.12);
+  transform: translateY(-50%) scale(1.05);
+  opacity: 1;
+}
+
+.search__clearBtn svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.4;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    max-width: calc(100% - 20px);
+  }
+
+  .hero__card {
+    min-height: 500px;
+  }
+
+  .hero__content {
+    min-height: 500px;
+    padding: 28px 16px 20px;
+  }
+
+  .hero__title {
+    font-size: 20px;
+  }
+
+  .hero__searchWrap {
+    margin-top: 108px;
+  }
+
+  .hero__search {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .search__item {
+    padding: 8px 8px;
+  }
+
+  .search__item--where {
+    padding-left: 8px;
+  }
+
+  .search__divider {
+    display: none;
+  }
+
+  .search__button {
+    width: 100%;
+    min-width: 0;
+    margin-left: 0;
+  }
+
+  .whereDropdown {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .whereDropdown__topbar {
+    position: sticky;
+    top: 0;
+    background: #111111;
+    z-index: 2;
+  }
+
+  .hero__title {
+    font-size: 18px;
+    line-height: 1.08;
+  }
+
+  .hero__eyebrow {
+    font-size: 12px;
+  }
+
+  .search__item input,
+  .search__dateInput {
+    font-size: 15px;
+  }
+
+  .search__item span {
+    font-size: 14px;
+  }
+
+  .search__button {
+    height: 54px;
+    font-size: 16px;
+  }
+}

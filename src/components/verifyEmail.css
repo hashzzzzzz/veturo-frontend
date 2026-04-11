@@ -1,0 +1,98 @@
+.verifyEmailPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.22), transparent 34%),
+    #111113;
+}
+
+.verifyEmailCard {
+  width: min(100%, 480px);
+  padding: 28px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+  text-align: center;
+}
+
+.verifyEmailCard h1 {
+  margin: 0 0 10px;
+  color: #111113;
+  font-size: clamp(28px, 4vw, 34px);
+}
+
+.verifyEmailLead {
+  margin: 0 0 18px;
+  color: #52525b;
+  line-height: 1.5;
+}
+
+.verifyEmailMessage {
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.verifyEmailMessage.loading {
+  border: 1px solid rgba(24, 24, 27, 0.12);
+  background: #f4f4f5;
+  color: #3f3f46;
+}
+
+.verifyEmailMessage.success {
+  border: 1px solid rgba(22, 101, 52, 0.18);
+  background: #e9f7ef;
+  color: #166534;
+}
+
+.verifyEmailMessage.error {
+  border: 1px solid rgba(185, 28, 28, 0.18);
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.verifyEmailActions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.verifyEmailActions a {
+  min-width: 140px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #111113;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.verifyEmailActions a:last-child {
+  background: #f4f4f5;
+  color: #111113;
+}
+
+@media (max-width: 480px) {
+  .verifyEmailPage {
+    padding: 16px;
+  }
+
+  .verifyEmailCard {
+    padding: 24px 18px;
+  }
+
+  .verifyEmailActions {
+    flex-direction: column;
+  }
+
+  .verifyEmailActions a {
+    width: 100%;
+  }
+}

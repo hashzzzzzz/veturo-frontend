@@ -1,0 +1,1029 @@
+.hostLoginPage,
+.hostDashboardPage {
+  min-height: calc(100vh - 120px);
+  padding: 30px 16px 50px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.hostLoginCard,
+.hostDashboardCard {
+  width: 100%;
+  max-width: 920px;
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 24px;
+  padding: 28px 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+}
+
+.hostLoginCard h1,
+.hostDashboardCard h1 {
+  margin: 0 0 8px;
+  color: #111111;
+}
+
+.hostLoginCard p,
+.hostPanelSubtext {
+  margin: 0 0 20px;
+  color: #666666;
+}
+
+.hostLoginForm,
+.hostCarForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hostLoginForm input,
+.hostCarForm input,
+.hostCarForm textarea {
+  width: 100%;
+  border: 1px solid #dddddd;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 14px;
+  outline: none;
+}
+
+.hostCarForm textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.hostLoginForm button,
+.hostCarForm button {
+  height: 52px;
+  border: none;
+  border-radius: 12px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hostError {
+  color: #dc2626;
+  font-size: 13px;
+  margin: 0;
+}
+
+.hostSuccess {
+  color: #15803d;
+  font-size: 13px;
+  margin: 0;
+}
+
+.hostMutedText {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.hostCarsSection {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid #efefef;
+}
+
+.hostCarsSection h2 {
+  margin: 0 0 16px;
+  color: #111111;
+}
+
+.hostCarsGrid,
+.hostCreatedGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.hostCarCard,
+.hostCreatedCard {
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hostCarCard:hover,
+.hostCreatedCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+}
+
+.hostCarImageWrap {
+  width: 100%;
+  height: 180px;
+  background: #f4f4f4;
+}
+
+.hostCarImageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hostCarInfo {
+  padding: 14px;
+}
+
+.hostCarInfo h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #111111;
+}
+
+.hostCarInfo p {
+  margin: 6px 0;
+  color: #666666;
+  font-size: 13px;
+}
+
+.hostCarInfo strong {
+  color: #111111;
+  font-size: 15px;
+}
+
+.hostCreatedList {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid #efefef;
+}
+
+.hostCreatedList h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  color: #111111;
+}
+
+.hostCreatedCard {
+  padding: 16px;
+}
+
+.hostCreatedName {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111111;
+}
+
+.hostCreatedEmail {
+  margin-top: 6px;
+  color: #666666;
+  font-size: 14px;
+}
+
+.hostCreatedRole {
+  margin-top: 10px;
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* UPLOAD BLOCK */
+.hostUploadBlock,
+.hostCalendarBlock {
+  width: 100%;
+}
+
+.hostUploadLabel {
+  display: block;
+  margin-bottom: 10px;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.hostDropzone {
+  width: 100%;
+  border: 2px dashed #d8d8d8;
+  border-radius: 20px;
+  background: #fafafa;
+  padding: 28px 18px;
+  text-align: center;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.hostDropzone.dragActive {
+  border-color: #111111;
+  background: #f3f3f3;
+  transform: scale(0.995);
+}
+
+.hostDropzone p {
+  margin: 0;
+  color: #666666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.hostDropzone p + p {
+  margin-top: 6px;
+}
+
+.hostUploadButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 14px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.hostUploadButton:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.hostPreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.hostPreviewCard {
+  border: 1px solid #ececec;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+}
+
+.hostPreviewCard img {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  background: #f4f4f4;
+}
+
+.hostRemovePreview {
+  width: calc(100% - 16px);
+  margin: 8px;
+  height: 42px !important;
+  border: none;
+  border-radius: 12px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* CALENDAR BLOCK */
+.hostCalendarRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.hostCalendarRow input[type="date"] {
+  flex: 1;
+  min-height: 52px;
+  border: 1px solid #dddddd;
+  border-radius: 16px;
+  padding: 0 16px;
+  font-size: 14px;
+  outline: none;
+  background: #ffffff;
+  color: #111111;
+}
+
+.hostCalendarRow button {
+  min-width: 130px;
+  height: 52px;
+  border: none;
+  border-radius: 16px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hostBlockedDatesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.hostBlockedDateItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: #f5f5f5;
+  border: 1px solid #e8e8e8;
+}
+
+.hostBlockedDateItem span {
+  color: #111111;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hostBlockedDateItem button {
+  height: 32px !important;
+  min-width: 78px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hostCalendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.hostCalendarTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #111111;
+}
+
+.hostCalendarNav {
+  min-width: 46px;
+  height: 46px !important;
+  border: 1px solid #dddddd !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+}
+
+.hostCalendarWeekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hostCalendarWeekdays span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #666666;
+}
+
+.hostCalendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hostCalendarEmpty {
+  min-height: 46px;
+}
+
+.hostCalendarDay {
+  min-height: 46px;
+  border: 1px solid #dddddd !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hostCalendarDay:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: #111111 !important;
+}
+
+.hostCalendarDay.selected {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border-color: #111111 !important;
+}
+
+.hostCalendarDay.past {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.hostQuestionBlock {
+  width: 100%;
+}
+
+.hostBooleanRow {
+  display: flex;
+  gap: 10px;
+}
+
+.hostBoolBtn {
+  min-width: 90px;
+  height: 46px;
+  border: 1px solid #dddddd;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hostBoolBtn.active {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+.hostSelect {
+  width: 100%;
+  border: 1px solid #dddddd;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 14px;
+  outline: none;
+  background: #ffffff;
+}
+.hostFormActions {
+  display: flex;
+  min-width: 110px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hostCancelBtn,
+.hostEditBtn,
+.hostDeleteBtn {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hostCancelBtn {
+  background: #f2f2f2;
+  color: #111;
+}
+
+.hostEditBtn {
+  background: #111;
+  color: #fff;
+}
+
+.hostDeleteBtn {
+  background: #d92d20;
+  color: #fff;
+}
+
+.hostCarActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.hostStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.hostStatusBadgePending {
+  background: #f59e0b;
+}
+
+.hostAdminNote {
+  color: #b45309 !important;
+  font-weight: 600;
+}
+
+.hostFormActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hostCancelBtn {
+  background: #6b7280 !important;
+}
+
+.hostDashboardCardWide {
+  max-width: 1300px;
+}
+
+.hostRecoverBox {
+  margin-top: 4px;
+  border-color: #e5e7eb;
+  background: #fafafa;
+}
+
+.hostRecoverBox p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.hostRecoverBox input {
+  border-radius: 12px;
+}
+
+.hostRecoverBox button {
+  height: 44px;
+}
+
+.hostPlainLinkBtn {
+  height: auto !important;
+  min-height: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: transparent !important;
+  color: #111111 !important;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  box-shadow: none;
+}
+
+.hostPlainLinkBtn.isActive {
+  background: #ffffff !important;
+  box-shadow: inset 0 0 0 1px #e5e7eb;
+}
+
+.hostRecoverOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 15, 17, 0.58);
+  backdrop-filter: blur(8px);
+}
+
+.hostRecoverPopup {
+  position: relative;
+  width: min(100%, 390px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 20px 20px;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+}
+
+.hostRecoverPopup h3 {
+  margin: 0 42px 0 0;
+  color: #111111;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.hostRecoverPopup p {
+  margin: 0;
+  color: #555555;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.hostRecoverPopup input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14px;
+  outline: none;
+}
+
+.hostRecoverPopup button:not(.hostRecoverClose) {
+  min-height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: #111111;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(17, 17, 19, 0.18);
+}
+
+.hostRecoverClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111111;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hostRecoverMessage {
+  position: relative;
+  padding: 11px 12px 11px 38px;
+  border: 1px solid rgba(22, 101, 52, 0.16);
+  border-radius: 12px;
+  background: #e9f7ef;
+  color: #166534 !important;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.hostRecoverMessage::before {
+  content: "✓";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #166534;
+  color: #ffffff;
+  font-size: 12px;
+  transform: translateY(-50%);
+}
+
+.adminAccordionSection {
+  margin-top: 24px;
+  border-top: 1px solid #efefef;
+  padding-top: 24px;
+}
+
+.adminAccordionToggle {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #ececec;
+  border-radius: 20px;
+  background: #ffffff;
+  padding: 18px 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.adminAccordionToggle:hover {
+  border-color: #d6d6d6;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.adminAccordionToggle h2 {
+  margin: 0 0 8px;
+}
+
+.adminAccordionTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.adminAccordionBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.adminAccordionIcon {
+  font-size: 28px;
+  line-height: 1;
+  color: #111111;
+}
+
+.adminAccordionBody {
+  padding-top: 18px;
+}
+
+.adminMiniList {
+  display: grid;
+  gap: 12px;
+}
+
+.adminMiniListCard {
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  padding: 14px;
+  background: #fafafa;
+}
+
+.adminClickableCard {
+  cursor: pointer;
+}
+
+.adminDeleteFeaturedCardBtn {
+  margin-top: 12px;
+}
+
+.adminReviewWrap {
+  margin-top: 34px;
+  padding-top: 24px;
+  border-top: 1px solid #efefef;
+}
+
+.adminReviewGrid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.adminReviewForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.adminReviewForm input,
+.adminReviewForm textarea,
+.adminReviewForm select {
+  width: 100%;
+  border: 1px solid #dddddd;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 14px;
+  outline: none;
+}
+
+.adminReviewForm textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.adminPreviewColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.adminPreviewBox {
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 20px;
+  padding: 18px;
+}
+
+.adminPreviewBox h3 {
+  margin: 0 0 14px;
+  color: #111111;
+}
+
+.adminPreviewBox p {
+  margin: 0 0 10px;
+  color: #555555;
+  line-height: 1.5;
+}
+
+.adminPreviewCardStatic {
+  cursor: default;
+}
+
+.adminCheckRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.adminReviewActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.adminFeaturedCarEditor {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #efefef;
+}
+
+.adminFeaturedCarEditor .adminPreviewBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.adminEditorHostRow {
+  margin-bottom: 4px;
+}
+
+.adminImagePreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.adminImagePreviewGrid img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #ececec;
+  background: #f4f4f4;
+}
+
+.adminDateEditor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hostCalendarDay.adminFreeDate {
+  background: #0f766e !important;
+  color: #ffffff !important;
+  border-color: #0f766e !important;
+}
+
+.adminCheckRow input[type="checkbox"] {
+  width: auto;
+}
+.hostCreatedTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hostMiniAvatar {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eaeaea;
+}
+
+.hostMiniAvatarFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  color: #fff;
+  font-weight: 700;
+}
+
+.hostAvatarUploadBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hostAvatarPreviewBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.hostCarActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hostAvatarUploadBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hostAvatarPreviewBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.hostCreatedTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hostMiniAvatar {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eaeaea;
+}
+
+.hostMiniAvatarFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  color: #fff;
+  font-weight: 700;
+}
+@media (max-width: 980px) {
+  .adminReviewGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .hostCarsGrid,
+  .hostCreatedGrid,
+  .hostPreviewGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hostCarsGrid,
+  .hostCreatedGrid,
+  .hostPreviewGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hostCalendarRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hostCalendarRow button {
+    width: 100%;
+  }
+
+  .hostDashboardCard,
+  .hostLoginCard {
+    padding: 22px 16px;
+  }
+
+  .hostDropzone {
+    padding: 22px 14px;
+  }
+
+  .hostPreviewCard img {
+    height: 190px;
+  }
+   .hostCalendarWeekdays span {
+    font-size: 11px;
+  }
+
+  .hostCalendarDay {
+    min-height: 42px;
+    font-size: 13px !important;
+    padding: 0 !important;
+  }
+
+  .hostRecoverOverlay {
+    align-items: center;
+    padding: 12px;
+  }
+
+  .hostRecoverPopup {
+    width: min(100%, 390px);
+    padding: 22px 16px 16px;
+    border-radius: 16px;
+  }
+}
