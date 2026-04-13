@@ -6,13 +6,13 @@ import {
   Navigate,
   Link,
 } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/navbar";
 import Main from "./components/Main";
 import LoginModal from "./components/LoginModal";
 import SignupModal from "./components/SignupModal";
 import RibbonIcons from "./components/RibbonIcons";
 import FeaturedSections from "./components/FeaturedSections";
-import CarDetails from "./components/CarDetails";
+import CarDetails from "./components/carDetails";
 import Footer from "./components/Footer";
 import BecomeHost from "./components/BecomeHost";
 import Host from "./components/Host";
