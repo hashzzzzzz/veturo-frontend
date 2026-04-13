@@ -25,6 +25,11 @@ import "./appAccess.css";
 
 const LANGUAGE_STORAGE_KEY = "veturoLanguage";
 
+function normalizeLanguage(language = "") {
+  if (language === "al" || language === "sq") return "al";
+  return "en";
+}
+
 const appCopy = {
   en: {
     navbar: {
@@ -110,7 +115,7 @@ function App() {
   });
 
   const [searchData, setSearchData] = useState(null);
-  const selectedLanguage = language || "en";
+  const selectedLanguage = normalizeLanguage(language || "en");
   const copy = appCopy[selectedLanguage] || appCopy.en;
 
   useEffect(() => {

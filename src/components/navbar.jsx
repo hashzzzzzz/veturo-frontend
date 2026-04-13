@@ -49,22 +49,14 @@ function Navbar({
       <div className="navbar__right">
         <div
           className="navbar__favoritesWrap"
-          onMouseEnter={() => {
-            if (window.innerWidth > 768) setFavoritesOpen(true);
-          }}
-          onMouseLeave={() => {
-            if (window.innerWidth > 768) setFavoritesOpen(false);
-          }}
         >
           <button
             type="button"
             className="navbar__favorites"
             title="Saved favorites"
             onClick={() => {
-              if (window.innerWidth <= 768) {
-                setFavoritesOpen((prev) => !prev);
-                setMenuOpen(false);
-              }
+              setFavoritesOpen(true);
+              setMenuOpen(false);
             }}
           >
             <HeartIcon className="navbar__favoritesIcon" />

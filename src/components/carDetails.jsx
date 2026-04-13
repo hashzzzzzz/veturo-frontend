@@ -6,11 +6,81 @@ import "./carDetails.css";
 
 const API_URL = "http://localhost:5000/api";
 
+const MONTH_NAMES = {
+  en: [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ],
+  al: [
+    "janar",
+    "shkurt",
+    "mars",
+    "prill",
+    "maj",
+    "qershor",
+    "korrik",
+    "gusht",
+    "shtator",
+    "tetor",
+    "nentor",
+    "dhjetor",
+  ],
+};
+
+function normalizeLanguage(language = "en") {
+  return language === "al" || language === "sq" ? "al" : "en";
+}
+
 function formatDateInput(date) {
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const day = `${date.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function formatBlockedDate(dateString, language = "en") {
+  if (!dateString) return "";
+
+  const [year, month, day] = String(dateString).split("-").map(Number);
+  const months = MONTH_NAMES[language] || MONTH_NAMES.en;
+
+  if (!year || !month || !day || !months[month - 1]) {
+    return dateString;
+  }
+
+  return `${day} ${months[month - 1]}`.toUpperCase();
+}
+
+function formatBookingDateLabel(dateString, language = "en") {
+  if (!dateString) return "";
+
+  const [year, month, day] = String(dateString).split("-").map(Number);
+  const months = MONTH_NAMES[language] || MONTH_NAMES.en;
+
+  if (!year || !month || !day || !months[month - 1]) {
+    return dateString;
+  }
+
+  return `${day} ${months[month - 1]}`;
+}
+
+function formatCalendarTitle(date, language = "en") {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const months = MONTH_NAMES[language] || MONTH_NAMES.en;
+  return `${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 function getMonthGrid(currentMonth) {
@@ -204,6 +274,7 @@ function mergeCarData(baseCar, freshCar) {
 }
 
 export default function CarDetails({ favorites = [], language = "en" }) {
+  const normalizedLanguage = normalizeLanguage(language);
   const copy = {
     en: {
       openingRide: "Opening your ride",
@@ -239,6 +310,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
       chatSoonText:
         "Direct chat between the customer and the car renter will be enabled when the Veturo mobile application is finished.",
       gotIt: "Got it",
+      calendarWeekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     },
     al: {
       openingRide: "Po hapim veturen tende",
@@ -274,8 +346,9 @@ export default function CarDetails({ favorites = [], language = "en" }) {
       chatSoonText:
         "Biseda direkte mes klientit dhe qiradhenesit do te aktivizohet kur aplikacioni mobil i Veturo te perfundoje.",
       gotIt: "Ne rregull",
+      calendarWeekdays: ["Hen", "Mar", "Mer", "Enj", "Pre", "Sht", "Die"],
     },
-  }[language] || {
+  }[normalizedLanguage] || {
     openingRide: "Opening your ride",
   };
   const { id } = useParams();
@@ -775,7 +848,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                     <div className="carDetails__blockedList">
                       {blockedDates.map((date) => (
                         <span key={date} className="carDetails__blockedChip">
-                          {date}
+                          {formatBlockedDate(date, normalizedLanguage)}
                         </span>
                       ))}
                     </div>
@@ -799,7 +872,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                         className={`carDetails__dateTrigger ${activePicker === "start" ? "active" : ""}`}
                         onClick={() => setActivePicker((prev) => (prev === "start" ? null : "start"))}
                       >
-                        {startDate}
+                        {formatBookingDateLabel(startDate, normalizedLanguage)}
                       </button>
 
                       <input
@@ -816,7 +889,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                         className={`carDetails__dateTrigger ${activePicker === "end" ? "active" : ""}`}
                         onClick={() => setActivePicker((prev) => (prev === "end" ? null : "end"))}
                       >
-                        {endDate}
+                        {formatBookingDateLabel(endDate, normalizedLanguage)}
                       </button>
 
                       <input
@@ -842,10 +915,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                           </button>
 
                           <h4 className="carDetails__calendarTitle">
-                            {calendarMonth.toLocaleString("en-US", {
-                              month: "long",
-                              year: "numeric",
-                            })}
+                            {formatCalendarTitle(calendarMonth, normalizedLanguage)}
                           </h4>
 
                           <button
@@ -862,13 +932,9 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                         </div>
 
                         <div className="carDetails__calendarWeekdays">
-                          <span>Mon</span>
-                          <span>Tue</span>
-                          <span>Wed</span>
-                          <span>Thu</span>
-                          <span>Fri</span>
-                          <span>Sat</span>
-                          <span>Sun</span>
+                          {copy.calendarWeekdays.map((day) => (
+                            <span key={day}>{day}</span>
+                          ))}
                         </div>
 
                         <div className="carDetails__calendarGrid">
