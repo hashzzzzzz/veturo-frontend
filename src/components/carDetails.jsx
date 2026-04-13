@@ -2,9 +2,8 @@ import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import GalleryModal from "../components/GalleryModal";
 import CarDetailsLoader from "./CarDetailsLoader";
+import API_URL from "../config/api";
 import "./carDetails.css";
-
-const API_URL = "http://localhost:5000/api";
 
 const MONTH_NAMES = {
   en: [

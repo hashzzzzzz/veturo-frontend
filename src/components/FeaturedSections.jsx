@@ -2,7 +2,7 @@ import "./featuredSections.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const API_URL = "http://localhost:5000/api";
+import API_URL from "../config/api";
 const DETAIL_CACHE_PREFIX = "veturo_car_full_";
 const PREFETCH_LIMIT = 6;
 

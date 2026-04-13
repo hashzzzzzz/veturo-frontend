@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import "./verifyEmail.css";
 
-const API_URL = "http://localhost:5000/api";
+import API_URL from "../config/api";
 
 export default function VerifyEmail() {
   const { token } = useParams();

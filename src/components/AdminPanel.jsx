@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import "./host.css";
 
-const API_URL = "http://localhost:5000/api";
+import API_URL from "../config/api";
 
 function arrayToCommaString(value) {
   if (!Array.isArray(value)) return "";

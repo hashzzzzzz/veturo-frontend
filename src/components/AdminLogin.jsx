@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./adminLogin.css";
 
-const API_URL = "http://localhost:5000/api";
+import API_URL from "../config/api";
 
 export default function AdminLogin({ setUser, language = "en" }) {
   const copy = {

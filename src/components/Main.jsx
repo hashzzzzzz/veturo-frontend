@@ -11,7 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./Main.css";
 import heroBg from "../assets/cargpt2.png";
 
-const API_URL = "http://localhost:5000/api";
+import API_URL from "../config/api";
 
 function slugify(value = "") {
   return value

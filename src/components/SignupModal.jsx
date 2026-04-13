@@ -3,7 +3,7 @@ import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import "./signupModal.css";
 
-const API_URL = "http://localhost:5000/api";
+import API_URL from "../config/api";
 
 export default function SignupModal({ isOpen, onClose, onLoginClick, language = "en" }) {
   const copy = {
