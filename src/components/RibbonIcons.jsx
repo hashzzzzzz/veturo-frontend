@@ -5,7 +5,7 @@ import {
   BuildingOffice2Icon,
 } from '@heroicons/react/24/outline'
 import { Bars3BottomLeftIcon } from '@heroicons/react/24/solid'
-import './RibbonIcons.css'
+import "./RibbonIcons.css"
 
 function RibbonIcons({ activeFilter, setActiveFilter, language = "en" }) {
   const filterCopy = {

@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import "react-datepicker/dist/react-datepicker.css";
-import "./Main.css";
+import "./main.css";
 import heroBg from "../assets/cargpt2.png";
 
 import API_URL from "../config/api";
