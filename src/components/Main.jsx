@@ -126,7 +126,7 @@ export default function Main({
       : null
   );
   const [searchError, setSearchError] = useState("");
-  const [activeField, setActiveField] = useState(null);
+  const [activePanel, setActivePanel] = useState(null);
   const [isMobileViewport, setIsMobileViewport] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.innerWidth <= 768;
@@ -135,10 +135,14 @@ export default function Main({
 
   const whereRef = useRef(null);
   const searchWrapRef = useRef(null);
+  const searchContainerRef = useRef(null);
   const whereInputRef = useRef(null);
   const whereDropdownRef = useRef(null);
 
-  const isSearchOverlayActive = isMobileViewport && whereOpen;
+  const isSearchOverlayActive = isMobileViewport && activePanel === "where";
+  const isWhereActive = activePanel === "where";
+  const isFromActive = activePanel === "from";
+  const isUntilActive = activePanel === "until";
 
   function scrollSearchIntoView(behavior = "smooth", block = "nearest") {
     if (!isMobileViewport) return;
@@ -168,7 +172,7 @@ export default function Main({
   }
 
   function updateMobileWhereDropdownPosition() {
-    if (!isMobileViewport || !whereOpen || !whereInputRef.current) {
+    if (!isMobileViewport || !isWhereActive || !whereInputRef.current) {
       setDropdownViewportStyle({});
       return;
     }
@@ -187,15 +191,22 @@ export default function Main({
   }
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (whereRef.current && !whereRef.current.contains(event.target)) {
+    function handlePointerDown(event) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target)
+      ) {
         setWhereOpen(false);
+        setActivePanel(null);
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
     };
   }, []);
 
@@ -217,10 +228,10 @@ export default function Main({
   }, []);
 
   useEffect(() => {
-    if (!whereOpen && activeField === "where") {
-      setActiveField(null);
+    if (!whereOpen && activePanel === "where") {
+      setActivePanel(null);
     }
-  }, [whereOpen, activeField]);
+  }, [whereOpen, activePanel]);
 
   useEffect(() => {
     if (!isSearchOverlayActive) return;
@@ -245,13 +256,13 @@ export default function Main({
 
   useEffect(() => {
     updateMobileWhereDropdownPosition();
-  }, [isMobileViewport, whereOpen, where]);
+  }, [isMobileViewport, isWhereActive, where]);
 
   useEffect(() => {
-    if (!whereOpen) return;
+    if (!isWhereActive) return;
 
     resetWhereDropdownScroll();
-  }, [whereOpen, where]);
+  }, [isWhereActive, where]);
 
   useEffect(() => {
     const shouldHideChrome = isMobileViewport && isSearchOverlayActive;
@@ -371,6 +382,7 @@ export default function Main({
   function handleOptionPick(item) {
     setWhere(item.title);
     setWhereOpen(false);
+    setActivePanel(null);
     setSelectedOption(item);
     setSearchError("");
     submitWithItem(item);
@@ -412,6 +424,7 @@ export default function Main({
     setSelectedOption(bestItem);
     submitWithItem(bestItem);
     setWhereOpen(false);
+    setActivePanel(null);
   }
 
   function onFromChange(date) {
@@ -450,6 +463,7 @@ export default function Main({
   function handleWhereChange(value) {
     setWhere(value);
     setWhereOpen(true);
+    setActivePanel("where");
     setSearchError("");
 
     if (!value.trim()) {
@@ -469,6 +483,7 @@ export default function Main({
   function clearWhere() {
     setWhere("");
     setWhereOpen(false);
+    setActivePanel(null);
     setSelectedOption(null);
     setSearchError("");
     resetSearch();
@@ -525,6 +540,14 @@ export default function Main({
             ref={searchWrapRef}
             className={`hero__searchWrap ${isSearchOverlayActive ? "hero__searchWrap--active" : ""}`}
           >
+            <div
+              ref={searchContainerRef}
+              className={`hero__searchShell ${
+                isMobileViewport && (isFromActive || isUntilActive)
+                  ? "hero__searchShell--calendarOpen"
+                  : ""
+              }`}
+            >
             <div className="hero__search">
               <div className="search__item search__item--where">
                 <label>{copy.where}</label>
@@ -537,8 +560,8 @@ export default function Main({
                       placeholder={copy.wherePlaceholder}
                       value={where}
                       onFocus={() => {
-                        setActiveField("where");
                         setWhereOpen(true);
+                        setActivePanel("where");
                         moveWhereSearchToTop();
                         updateMobileWhereDropdownPosition();
                       }}
@@ -574,7 +597,7 @@ export default function Main({
                     )}
                   </div>
 
-                  {whereOpen && (
+                  {whereOpen && isWhereActive && (
                     <div
                       ref={whereDropdownRef}
                       className="whereDropdown"
@@ -778,21 +801,40 @@ export default function Main({
                     selected={fromDate}
                     onChange={onFromChange}
                     onFocus={() => {
-                      setActiveField("from");
+                      if (isMobileViewport) {
+                        setWhereOpen(false);
+                        setActivePanel("from");
+                      }
                     }}
                     onCalendarOpen={() => {
-                      setActiveField("from");
+                      if (!isMobileViewport) {
+                        setActivePanel("from");
+                      }
                     }}
-                    onCalendarClose={() => setActiveField(null)}
+                    onCalendarClose={() => {
+                      if (!isMobileViewport) {
+                        setActivePanel(null);
+                      }
+                    }}
                     onInputClick={() => {
-                      setActiveField("from");
+                      if (isMobileViewport) {
+                        setWhereOpen(false);
+                        setActivePanel("from");
+                      }
                     }}
                     placeholderText={copy.addDates}
                     dateFormat="dd MMM yyyy"
                     className="search__dateInput"
                     popperPlacement="bottom-start"
                     minDate={today}
-                    withPortal={isMobileViewport}
+                    withPortal={false}
+                    inline={isMobileViewport && isFromActive}
+                    shouldCloseOnSelect={!isMobileViewport}
+                    onSelect={() => {
+                      if (isMobileViewport) {
+                        setActivePanel(null);
+                      }
+                    }}
                     customInput={
                       isMobileViewport ? (
                         <SearchDateInput
@@ -843,21 +885,40 @@ export default function Main({
                     selected={untilDate}
                     onChange={onUntilChange}
                     onFocus={() => {
-                      setActiveField("until");
+                      if (isMobileViewport) {
+                        setWhereOpen(false);
+                        setActivePanel("until");
+                      }
                     }}
                     onCalendarOpen={() => {
-                      setActiveField("until");
+                      if (!isMobileViewport) {
+                        setActivePanel("until");
+                      }
                     }}
-                    onCalendarClose={() => setActiveField(null)}
+                    onCalendarClose={() => {
+                      if (!isMobileViewport) {
+                        setActivePanel(null);
+                      }
+                    }}
                     onInputClick={() => {
-                      setActiveField("until");
+                      if (isMobileViewport) {
+                        setWhereOpen(false);
+                        setActivePanel("until");
+                      }
                     }}
                     placeholderText={copy.addDates}
                     dateFormat="dd MMM yyyy"
                     minDate={fromDate || today}
                     className="search__dateInput"
                     popperPlacement="bottom-start"
-                    withPortal={isMobileViewport}
+                    withPortal={false}
+                    inline={isMobileViewport && isUntilActive}
+                    shouldCloseOnSelect={!isMobileViewport}
+                    onSelect={() => {
+                      if (isMobileViewport) {
+                        setActivePanel(null);
+                      }
+                    }}
                     customInput={
                       isMobileViewport ? (
                         <SearchDateInput
@@ -906,6 +967,7 @@ export default function Main({
               >
                 {copy.search}
               </button>
+            </div>
             </div>
           </div>
 

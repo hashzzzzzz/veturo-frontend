@@ -78,9 +78,15 @@
   z-index: 70;
 }
 
-.hero__search {
+.hero__searchShell {
   width: 100%;
   max-width: 980px;
+  position: relative;
+  overflow: visible;
+}
+
+.hero__search {
+  width: 100%;
   background: #ffffff;
   border-radius: 22px;
   padding: 10px 10px 10px 18px;
@@ -133,6 +139,7 @@
   text-align: left;
   background: transparent;
   cursor: pointer;
+  border: none;
 }
 
 .search__item input::placeholder,
@@ -493,6 +500,10 @@
     border-radius: 20px;
   }
 
+  .hero__searchShell--calendarOpen {
+    z-index: 2147481800;
+  }
+
   .search__item {
     padding: 8px 8px;
   }
@@ -523,27 +534,11 @@
 }
 
 @media (max-width: 768px) {
-  .react-datepicker__portal {
-    position: fixed !important;
-    inset: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: #0b0b0b !important;
-    padding: 12px !important;
-    z-index: 2147483600 !important;
-  }
-
   .react-datepicker {
     font-size: 1rem !important;
-    transform: none;
-    width: min(92vw, 340px);
-    max-width: 340px;
+    width: 100%;
+    max-width: none;
     box-shadow: 0 28px 72px rgba(0, 0, 0, 0.6);
-  }
-
-  .react-datepicker__portal .react-datepicker {
-    background: #0f0f0f !important;
   }
 
   .react-datepicker-popper {
@@ -552,6 +547,20 @@
 
   .react-datepicker__month-container {
     width: 100%;
+  }
+
+  .search__item .react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  .search__item .react-datepicker {
+    margin-top: 10px;
+    border-radius: 18px !important;
+    overflow: hidden;
+  }
+
+  .search__item .react-datepicker__header {
+    padding-top: 12px !important;
   }
 
   .react-datepicker__day-name,
@@ -563,10 +572,6 @@
 
   .react-datepicker__current-month {
     font-size: 1rem !important;
-  }
-
-  .react-datepicker__header {
-    padding-top: 12px !important;
   }
 
   .whereDropdown {
