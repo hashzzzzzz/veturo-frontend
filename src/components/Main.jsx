@@ -280,17 +280,14 @@ export default function Main({
   }, [isWhereActive, where]);
 
   useEffect(() => {
-    const shouldHideChrome =
-      isMobileViewport && (isSearchOverlayActive || isMobileCalendarOpen);
+    const shouldHideChrome = isMobileViewport && isSearchOverlayActive;
 
     document.body.classList.toggle("mobileSearchActive", shouldHideChrome);
-    document.body.classList.toggle("mobileCalendarActive", shouldHideChrome);
 
     return () => {
       document.body.classList.remove("mobileSearchActive");
-      document.body.classList.remove("mobileCalendarActive");
     };
-  }, [isMobileViewport, isSearchOverlayActive, isMobileCalendarOpen]);
+  }, [isMobileViewport, isSearchOverlayActive]);
 
   useEffect(() => {
     const controller = new AbortController();
