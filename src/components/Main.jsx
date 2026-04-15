@@ -137,17 +137,28 @@ export default function Main({
   const searchWrapRef = useRef(null);
   const whereInputRef = useRef(null);
 
-  const isSearchOverlayActive = isMobileViewport && (whereOpen || activeField);
+  const isSearchOverlayActive = isMobileViewport && whereOpen;
 
-  function scrollSearchIntoView(behavior = "smooth") {
+  function scrollSearchIntoView(behavior = "smooth", block = "nearest") {
     if (!isMobileViewport) return;
 
     window.setTimeout(() => {
       searchWrapRef.current?.scrollIntoView({
         behavior,
-        block: "nearest",
+        block,
       });
     }, 120);
+  }
+
+  function moveWhereSearchToTop() {
+    if (!isMobileViewport) return;
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    scrollSearchIntoView("smooth", "start");
   }
 
   function updateMobileWhereDropdownPosition() {
@@ -208,12 +219,12 @@ export default function Main({
   useEffect(() => {
     if (!isSearchOverlayActive) return;
 
-    scrollSearchIntoView();
+    moveWhereSearchToTop();
 
     if (!window.visualViewport) return;
 
     const keepSearchVisible = () => {
-      scrollSearchIntoView("auto");
+      moveWhereSearchToTop();
       updateMobileWhereDropdownPosition();
     };
 
@@ -516,7 +527,7 @@ export default function Main({
                       onFocus={() => {
                         setActiveField("where");
                         setWhereOpen(true);
-                        scrollSearchIntoView();
+                        moveWhereSearchToTop();
                         updateMobileWhereDropdownPosition();
                       }}
                       onChange={(e) => handleWhereChange(e.target.value)}
@@ -752,16 +763,13 @@ export default function Main({
                     onChange={onFromChange}
                     onFocus={() => {
                       setActiveField("from");
-                      scrollSearchIntoView();
                     }}
                     onCalendarOpen={() => {
                       setActiveField("from");
-                      scrollSearchIntoView();
                     }}
                     onCalendarClose={() => setActiveField(null)}
                     onInputClick={() => {
                       setActiveField("from");
-                      scrollSearchIntoView();
                     }}
                     placeholderText={copy.addDates}
                     dateFormat="dd MMM yyyy"
@@ -820,16 +828,13 @@ export default function Main({
                     onChange={onUntilChange}
                     onFocus={() => {
                       setActiveField("until");
-                      scrollSearchIntoView();
                     }}
                     onCalendarOpen={() => {
                       setActiveField("until");
-                      scrollSearchIntoView();
                     }}
                     onCalendarClose={() => setActiveField(null)}
                     onInputClick={() => {
                       setActiveField("until");
-                      scrollSearchIntoView();
                     }}
                     placeholderText={copy.addDates}
                     dateFormat="dd MMM yyyy"
