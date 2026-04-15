@@ -740,7 +740,12 @@ export default function Main({
                     popperPlacement="bottom-start"
                     minDate={today}
                     withPortal={isMobileViewport}
-                    readOnly={isMobileViewport}
+                    inputMode={isMobileViewport ? "none" : undefined}
+                    onKeyDown={(event) => {
+                      if (isMobileViewport) {
+                        event.preventDefault();
+                      }
+                    }}
                   />
                   {fromDate && (
                     <button
@@ -798,7 +803,12 @@ export default function Main({
                     className="search__dateInput"
                     popperPlacement="bottom-start"
                     withPortal={isMobileViewport}
-                    readOnly={isMobileViewport}
+                    inputMode={isMobileViewport ? "none" : undefined}
+                    onKeyDown={(event) => {
+                      if (isMobileViewport) {
+                        event.preventDefault();
+                      }
+                    }}
                   />
                   {untilDate && (
                     <button
