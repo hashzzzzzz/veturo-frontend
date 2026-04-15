@@ -112,9 +112,11 @@ export default function Main({
     if (typeof window === "undefined") return false;
     return window.innerWidth <= 768;
   });
+  const [dropdownViewportStyle, setDropdownViewportStyle] = useState({});
 
   const whereRef = useRef(null);
   const searchWrapRef = useRef(null);
+  const whereInputRef = useRef(null);
 
   const isSearchOverlayActive = isMobileViewport && (whereOpen || activeField);
 
@@ -124,9 +126,28 @@ export default function Main({
     window.setTimeout(() => {
       searchWrapRef.current?.scrollIntoView({
         behavior,
-        block: "start",
+        block: "nearest",
       });
     }, 120);
+  }
+
+  function updateMobileWhereDropdownPosition() {
+    if (!isMobileViewport || !whereOpen || !whereInputRef.current) {
+      setDropdownViewportStyle({});
+      return;
+    }
+
+    const rect = whereInputRef.current.getBoundingClientRect();
+    const viewportTop = window.visualViewport?.offsetTop || 0;
+    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+    const viewportBottom = viewportTop + viewportHeight;
+    const top = Math.max(rect.bottom + 8, viewportTop + 72);
+    const maxHeight = Math.max(180, viewportBottom - top - 12);
+
+    setDropdownViewportStyle({
+      "--where-dropdown-top": `${Math.round(top)}px`,
+      "--where-dropdown-max-height": `${Math.round(maxHeight)}px`,
+    });
   }
 
   useEffect(() => {
@@ -174,6 +195,7 @@ export default function Main({
 
     const keepSearchVisible = () => {
       scrollSearchIntoView("auto");
+      updateMobileWhereDropdownPosition();
     };
 
     window.visualViewport.addEventListener("resize", keepSearchVisible);
@@ -184,6 +206,10 @@ export default function Main({
       window.visualViewport.removeEventListener("scroll", keepSearchVisible);
     };
   }, [isSearchOverlayActive]);
+
+  useEffect(() => {
+    updateMobileWhereDropdownPosition();
+  }, [isMobileViewport, whereOpen, where]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -454,6 +480,7 @@ export default function Main({
                 <div className="whereDropdownWrap" ref={whereRef}>
                   <div style={{ position: "relative" }}>
                     <input
+                      ref={whereInputRef}
                       type="text"
                       placeholder={copy.wherePlaceholder}
                       value={where}
@@ -461,6 +488,7 @@ export default function Main({
                         setActiveField("where");
                         setWhereOpen(true);
                         scrollSearchIntoView();
+                        updateMobileWhereDropdownPosition();
                       }}
                       onChange={(e) => handleWhereChange(e.target.value)}
                       style={{ paddingRight: where ? "42px" : undefined }}
@@ -495,7 +523,7 @@ export default function Main({
                   </div>
 
                   {whereOpen && (
-                    <div className="whereDropdown">
+                    <div className="whereDropdown" style={dropdownViewportStyle}>
                       <div className="whereDropdown__topbar">
                             <span>{copy.chooseLocation}</span>
                         <button
