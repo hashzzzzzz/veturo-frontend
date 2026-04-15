@@ -470,7 +470,7 @@
 
   .hero__searchWrap--active {
     position: fixed;
-    top: 8px;
+    top: 2px;
     left: 10px;
     right: 10px;
     width: auto;
@@ -482,7 +482,7 @@
 
   .hero__content--searchActive {
     justify-content: flex-start;
-    padding-top: 120px;
+    padding-top: 112px;
     padding-bottom: 28px;
   }
 
