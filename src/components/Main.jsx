@@ -141,8 +141,8 @@ export default function Main({
     const viewportTop = window.visualViewport?.offsetTop || 0;
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
     const viewportBottom = viewportTop + viewportHeight;
-    const top = Math.max(rect.bottom + 8, viewportTop + 72);
-    const maxHeight = Math.max(180, viewportBottom - top - 12);
+    const top = Math.max(rect.bottom + 6, viewportTop + 8);
+    const maxHeight = Math.max(160, viewportBottom - top - 8);
 
     setDropdownViewportStyle({
       "--where-dropdown-top": `${Math.round(top)}px`,
@@ -740,6 +740,7 @@ export default function Main({
                     popperPlacement="bottom-start"
                     minDate={today}
                     withPortal={isMobileViewport}
+                    readOnly={isMobileViewport}
                   />
                   {fromDate && (
                     <button
@@ -797,6 +798,7 @@ export default function Main({
                     className="search__dateInput"
                     popperPlacement="bottom-start"
                     withPortal={isMobileViewport}
+                    readOnly={isMobileViewport}
                   />
                   {untilDate && (
                     <button

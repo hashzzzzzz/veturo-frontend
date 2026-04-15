@@ -461,7 +461,7 @@
   }
 
   .hero__searchWrap--active {
-    margin-top: 72px;
+    margin-top: 12px;
     align-self: stretch;
   }
 
@@ -492,21 +492,29 @@
 
   .whereDropdown {
     position: fixed;
-    top: var(--where-dropdown-top, 132px);
+    top: var(--where-dropdown-top, 96px);
     left: 16px;
     right: 16px;
     width: auto;
     max-width: none;
-    max-height: var(--where-dropdown-max-height, min(46vh, 320px));
+    max-height: var(--where-dropdown-max-height, min(42vh, 300px));
   }
 }
 
 @media (max-width: 768px) {
+  .whereDropdown {
+    padding: 6px;
+    border-radius: 14px;
+  }
+
   .whereDropdown__topbar {
     position: sticky;
     top: 0;
     background: #111111;
     z-index: 2;
+    padding: 6px 6px 8px;
+    margin-bottom: 2px;
+    font-size: 13px;
   }
 
   .hero__title {
@@ -521,6 +529,42 @@
   .search__item input,
   .search__dateInput {
     font-size: 16px;
+  }
+
+  .whereDropdown__header {
+    padding: 8px 10px 10px;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+
+  .whereDropdown__header--cities {
+    margin-top: 4px;
+  }
+
+  .whereDropdown__item {
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 10px;
+  }
+
+  .whereDropdown__icon {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+  }
+
+  .whereDropdown__icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .whereDropdown__title {
+    font-size: 13px;
+  }
+
+  .whereDropdown__subtitle {
+    font-size: 11px;
+    margin-top: 2px;
   }
 
   .search__item span {
