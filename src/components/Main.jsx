@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
+import { format } from "date-fns";
 import {
   PaperAirplaneIcon,
   MagnifyingGlassIcon,
@@ -32,6 +33,24 @@ function buildManualCityItem(value = "") {
     targetSectionKey: `city-${slugify(clean)}`,
   };
 }
+
+const SearchDateInput = forwardRef(function SearchDateInput(
+  { value, onClick, placeholder, className },
+  ref
+) {
+  const displayValue = value || placeholder;
+
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className={className}
+      onClick={onClick}
+    >
+      {displayValue}
+    </button>
+  );
+});
 
 export default function Main({
   language = "en",
@@ -740,12 +759,17 @@ export default function Main({
                     popperPlacement="bottom-start"
                     minDate={today}
                     withPortal={isMobileViewport}
-                    inputMode={isMobileViewport ? "none" : undefined}
-                    onKeyDown={(event) => {
-                      if (isMobileViewport) {
-                        event.preventDefault();
-                      }
-                    }}
+                    customInput={
+                      isMobileViewport ? (
+                        <SearchDateInput
+                          className="search__dateInput search__dateInputButton"
+                          placeholder={copy.addDates}
+                        />
+                      ) : undefined
+                    }
+                    value={
+                      fromDate ? format(fromDate, "dd MMM yyyy") : undefined
+                    }
                   />
                   {fromDate && (
                     <button
@@ -803,12 +827,17 @@ export default function Main({
                     className="search__dateInput"
                     popperPlacement="bottom-start"
                     withPortal={isMobileViewport}
-                    inputMode={isMobileViewport ? "none" : undefined}
-                    onKeyDown={(event) => {
-                      if (isMobileViewport) {
-                        event.preventDefault();
-                      }
-                    }}
+                    customInput={
+                      isMobileViewport ? (
+                        <SearchDateInput
+                          className="search__dateInput search__dateInputButton"
+                          placeholder={copy.addDates}
+                        />
+                      ) : undefined
+                    }
+                    value={
+                      untilDate ? format(untilDate, "dd MMM yyyy") : undefined
+                    }
                   />
                   {untilDate && (
                     <button

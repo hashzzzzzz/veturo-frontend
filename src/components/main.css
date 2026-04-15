@@ -128,6 +128,13 @@
   padding: 0;
 }
 
+.search__dateInputButton {
+  display: block;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+}
+
 .search__item input::placeholder,
 .search__dateInput::placeholder {
   color: #7c7c7c;
@@ -449,7 +456,8 @@
 
   .hero__content {
     min-height: 500px;
-    padding: 28px 16px 20px;
+    justify-content: flex-start;
+    padding: 6px 16px 28px;
   }
 
   .hero__title {
@@ -457,11 +465,11 @@
   }
 
   .hero__searchWrap {
-    margin-top: 18px;
+    margin-top: 10px;
   }
 
   .hero__searchWrap--active {
-    margin-top: 8px;
+    margin-top: 6px;
     align-self: stretch;
   }
 
