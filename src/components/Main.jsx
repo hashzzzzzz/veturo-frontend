@@ -107,6 +107,7 @@ export default function Main({
   }[language] || {
     eyebrow: "DRIVE YOUR WAY",
   };
+
   const [fromDate, setFromDate] = useState(initialSearch?.fromDate || null);
   const [untilDate, setUntilDate] = useState(initialSearch?.untilDate || null);
   const [where, setWhere] = useState(initialSearch?.where || "");
@@ -143,6 +144,8 @@ export default function Main({
   const isWhereActive = activePanel === "where";
   const isFromActive = activePanel === "from";
   const isUntilActive = activePanel === "until";
+  const isMobileCalendarOpen =
+    isMobileViewport && (activePanel === "from" || activePanel === "until");
 
   function scrollSearchIntoView(behavior = "smooth", block = "nearest") {
     if (!isMobileViewport) return;
@@ -188,6 +191,18 @@ export default function Main({
       "--where-dropdown-top": `${Math.round(top)}px`,
       "--where-dropdown-max-height": `${Math.round(maxHeight)}px`,
     });
+  }
+
+  function openMobileCalendar(panel) {
+    if (!isMobileViewport) return;
+    if (whereOpen || activePanel === "where") return;
+
+    setWhereOpen(false);
+    setActivePanel(panel);
+  }
+
+  function closeMobileCalendar() {
+    setActivePanel(null);
   }
 
   useEffect(() => {
@@ -265,14 +280,17 @@ export default function Main({
   }, [isWhereActive, where]);
 
   useEffect(() => {
-    const shouldHideChrome = isMobileViewport && isSearchOverlayActive;
+    const shouldHideChrome =
+      isMobileViewport && (isSearchOverlayActive || isMobileCalendarOpen);
 
     document.body.classList.toggle("mobileSearchActive", shouldHideChrome);
+    document.body.classList.toggle("mobileCalendarActive", shouldHideChrome);
 
     return () => {
       document.body.classList.remove("mobileSearchActive");
+      document.body.classList.remove("mobileCalendarActive");
     };
-  }, [isMobileViewport, isSearchOverlayActive]);
+  }, [isMobileViewport, isSearchOverlayActive, isMobileCalendarOpen]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -439,6 +457,7 @@ export default function Main({
 
     if (!where.trim()) {
       setSearchError(copy.selectFirst);
+      if (isMobileViewport) setActivePanel(null);
       return;
     }
 
@@ -456,6 +475,7 @@ export default function Main({
 
     if (!where.trim()) {
       setSearchError(copy.selectFirst);
+      if (isMobileViewport) setActivePanel(null);
       return;
     }
 
@@ -509,7 +529,6 @@ export default function Main({
   }
 
   function closeFromPanel() {
-    clearFromDate();
     setActivePanel(null);
   }
 
@@ -525,7 +544,6 @@ export default function Main({
   }
 
   function closeUntilPanel() {
-    clearUntilDate();
     setActivePanel(null);
   }
 
@@ -549,56 +567,355 @@ export default function Main({
       >
         <div className="hero__overlay" />
 
-        <div className={`hero__content ${isSearchOverlayActive ? "hero__content--searchActive" : ""}`}>
+        <div
+          className={`hero__content ${
+            isSearchOverlayActive ? "hero__content--searchActive" : ""
+          }`}
+        >
           <div className="hero__text">
             <p className="hero__eyebrow">{copy.eyebrow}</p>
           </div>
 
           <div
             ref={searchWrapRef}
-            className={`hero__searchWrap ${isSearchOverlayActive ? "hero__searchWrap--active" : ""}`}
+            className={`hero__searchWrap ${
+              isSearchOverlayActive ? "hero__searchWrap--active" : ""
+            }`}
           >
             <div
               ref={searchContainerRef}
               className={`hero__searchShell ${
-                isMobileViewport && (isFromActive || isUntilActive)
-                  ? "hero__searchShell--calendarOpen"
-                  : ""
+                isMobileCalendarOpen ? "hero__searchShell--calendarOpen" : ""
               }`}
             >
-            <div className="hero__search">
-              <div className="search__item search__item--where">
-                <label>{copy.where}</label>
+              <div className="hero__search">
+                <div className="search__item search__item--where">
+                  <label>{copy.where}</label>
 
-                <div className="whereDropdownWrap" ref={whereRef}>
+                  <div className="whereDropdownWrap" ref={whereRef}>
+                    <div style={{ position: "relative" }}>
+                      <input
+                        ref={whereInputRef}
+                        type="text"
+                        placeholder={copy.wherePlaceholder}
+                        value={where}
+                        onFocus={() => {
+                          setWhereOpen(true);
+                          setActivePanel("where");
+                          moveWhereSearchToTop();
+                          updateMobileWhereDropdownPosition();
+                        }}
+                        onChange={(e) => handleWhereChange(e.target.value)}
+                        style={{ paddingRight: where ? "42px" : undefined }}
+                      />
+
+                      {where && (
+                        <button
+                          type="button"
+                          onClick={clearWhere}
+                          aria-label="Clear where"
+                          style={{
+                            position: "absolute",
+                            right: "10px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            border: "none",
+                            background: "#000000",
+                            borderRadius: "50%",
+                            width: "26px",
+                            height: "26px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: 0,
+                            zIndex: 2,
+                          }}
+                        >
+                          <XMarkIcon
+                            style={{ width: 16, height: 16, color: "#fff" }}
+                          />
+                        </button>
+                      )}
+                    </div>
+
+                    {whereOpen && isWhereActive && (
+                      <div
+                        ref={whereDropdownRef}
+                        className="whereDropdown"
+                        style={dropdownViewportStyle}
+                      >
+                        <div className="whereDropdown__topbar">
+                          <span>{copy.chooseLocation}</span>
+                          <button
+                            type="button"
+                            className="whereDropdown__close"
+                            aria-label="Close location dropdown"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => {
+                              setWhereOpen(false);
+                              setActivePanel(null);
+                            }}
+                          >
+                            <XMarkIcon />
+                          </button>
+                        </div>
+
+                        {!hasTypedSearch ? (
+                          <>
+                            <div className="whereDropdown__header">
+                              <span className="whereDropdown__headerIcon">
+                                <PaperAirplaneIcon />
+                              </span>
+                              <span>{copy.airports}</span>
+                            </div>
+
+                            {loadingOptions ? (
+                              <div className="whereDropdown__item whereDropdown__item--static">
+                                <span className="whereDropdown__icon">
+                                  <PaperAirplaneIcon />
+                                </span>
+
+                                <span className="whereDropdown__content">
+                                  <span className="whereDropdown__title">
+                                    {copy.loading}
+                                  </span>
+                                  <span className="whereDropdown__subtitle">
+                                    {copy.checkingAirports}
+                                  </span>
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="whereDropdown__item whereDropdown__item--static">
+                                <span className="whereDropdown__icon">
+                                  <PaperAirplaneIcon />
+                                </span>
+
+                                <span className="whereDropdown__content">
+                                  <span className="whereDropdown__title">
+                                    {copy.availableAirports(airportCount)}
+                                  </span>
+                                  <span className="whereDropdown__subtitle">
+                                    {copy.typeToSeeAirports}
+                                  </span>
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="whereDropdown__header whereDropdown__header--cities">
+                              <span className="whereDropdown__headerIcon">
+                                <BuildingOffice2Icon />
+                              </span>
+                              <span>{copy.cities}</span>
+                            </div>
+
+                            <div className="whereDropdown__item whereDropdown__item--city whereDropdown__item--static">
+                              <span className="whereDropdown__icon">
+                                <MagnifyingGlassIcon />
+                              </span>
+
+                              <span className="whereDropdown__content">
+                                <span className="whereDropdown__title">
+                                  {copy.availableCities(cityCount)}
+                                </span>
+                                <span className="whereDropdown__subtitle">
+                                  {copy.typeToSeeCities}
+                                </span>
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="whereDropdown__header">
+                              <span className="whereDropdown__headerIcon">
+                                <PaperAirplaneIcon />
+                              </span>
+                              <span>{copy.airports}</span>
+                            </div>
+
+                            {loadingOptions ? (
+                              <div className="whereDropdown__item whereDropdown__item--static">
+                                <span className="whereDropdown__icon">
+                                  <PaperAirplaneIcon />
+                                </span>
+
+                                <span className="whereDropdown__content">
+                                  <span className="whereDropdown__title">
+                                    {copy.loading}
+                                  </span>
+                                  <span className="whereDropdown__subtitle">
+                                    {copy.searchingAirports}
+                                  </span>
+                                </span>
+                              </div>
+                            ) : airportOptions.length > 0 ? (
+                              airportOptions.map((airport) => (
+                                <button
+                                  key={airport.id}
+                                  type="button"
+                                  className="whereDropdown__item"
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  onClick={() => handleOptionPick(airport)}
+                                >
+                                  <span className="whereDropdown__icon">
+                                    <PaperAirplaneIcon />
+                                  </span>
+
+                                  <span className="whereDropdown__content">
+                                    <span className="whereDropdown__title">
+                                      {airport.title}
+                                    </span>
+                                    <span className="whereDropdown__subtitle">
+                                      {airport.subtitle}
+                                    </span>
+                                  </span>
+                                </button>
+                              ))
+                            ) : (
+                              <div className="whereDropdown__item whereDropdown__item--static">
+                                <span className="whereDropdown__icon">
+                                  <PaperAirplaneIcon />
+                                </span>
+
+                                <span className="whereDropdown__content">
+                                  <span className="whereDropdown__title">
+                                    {copy.noAirportResults}
+                                  </span>
+                                  <span className="whereDropdown__subtitle">
+                                    {copy.tryAirport}
+                                  </span>
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="whereDropdown__header whereDropdown__header--cities">
+                              <span className="whereDropdown__headerIcon">
+                                <BuildingOffice2Icon />
+                              </span>
+                              <span>{copy.cities}</span>
+                            </div>
+
+                            {cityOptions.length > 0 ? (
+                              cityOptions.map((city) => (
+                                <button
+                                  key={city.id}
+                                  type="button"
+                                  className="whereDropdown__item whereDropdown__item--city"
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  onClick={() => handleOptionPick(city)}
+                                >
+                                  <span className="whereDropdown__icon">
+                                    <MagnifyingGlassIcon />
+                                  </span>
+
+                                  <span className="whereDropdown__content">
+                                    <span className="whereDropdown__title">
+                                      {city.title}
+                                    </span>
+                                    <span className="whereDropdown__subtitle">
+                                      {city.subtitle}
+                                    </span>
+                                  </span>
+                                </button>
+                              ))
+                            ) : (
+                              <button
+                                type="button"
+                                className="whereDropdown__item whereDropdown__item--city"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() =>
+                                  handleOptionPick(buildManualCityItem(cityValue))
+                                }
+                              >
+                                <span className="whereDropdown__icon">
+                                  <MagnifyingGlassIcon />
+                                </span>
+
+                                <span className="whereDropdown__content">
+                                  <span className="whereDropdown__title">
+                                    {cityValue}
+                                  </span>
+                                  <span className="whereDropdown__subtitle">
+                                    {copy.city}
+                                  </span>
+                                </span>
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="search__divider" />
+
+                <div className="search__item">
+                  <label>{copy.from}</label>
                   <div style={{ position: "relative" }}>
-                    <input
-                      ref={whereInputRef}
-                      type="text"
-                      placeholder={copy.wherePlaceholder}
-                      value={where}
+                    <DatePicker
+                      selected={fromDate}
+                      onChange={onFromChange}
                       onFocus={() => {
-                        setWhereOpen(true);
-                        setActivePanel("where");
-                        moveWhereSearchToTop();
-                        updateMobileWhereDropdownPosition();
+                        if (isMobileViewport) return;
+                        setActivePanel("from");
                       }}
-                      onChange={(e) => handleWhereChange(e.target.value)}
-                      style={{ paddingRight: where ? "42px" : undefined }}
+                      onCalendarOpen={() => {
+                        if (!isMobileViewport) {
+                          setActivePanel("from");
+                        }
+                      }}
+                      onCalendarClose={() => {
+                        if (!isMobileViewport) {
+                          setActivePanel(null);
+                        }
+                      }}
+                      onInputClick={() => {
+                        if (isMobileViewport) {
+                          openMobileCalendar("from");
+                          return;
+                        }
+                        setActivePanel("from");
+                      }}
+                      placeholderText={copy.addDates}
+                      dateFormat="dd MMM yyyy"
+                      className="search__dateInput"
+                      popperPlacement="bottom-start"
+                      minDate={today}
+                      withPortal={false}
+                      inline={false}
+                      shouldCloseOnSelect={!isMobileViewport}
+                      customInput={
+                        isMobileViewport ? (
+                          <SearchDateInput
+                            className="search__dateInput search__dateInputButton"
+                            placeholder={copy.addDates}
+                          />
+                        ) : undefined
+                      }
+                      value={fromDate ? format(fromDate, "dd MMM yyyy") : undefined}
+                      open={!isMobileViewport ? undefined : false}
                     />
-
-                    {where && (
+                    {(fromDate || (isMobileViewport && isFromActive)) && (
                       <button
                         type="button"
-                        onClick={clearWhere}
-                        aria-label="Clear where"
+                        onClick={
+                          isMobileViewport && isFromActive
+                            ? closeFromPanel
+                            : clearFromDate
+                        }
+                        aria-label={
+                          isMobileViewport && isFromActive
+                            ? "Close from calendar"
+                            : "Clear from date"
+                        }
                         style={{
                           position: "absolute",
                           right: "10px",
                           top: "50%",
                           transform: "translateY(-50%)",
                           border: "none",
-                          background: "#000000",
+                          background: "#000",
                           borderRadius: "50%",
                           width: "26px",
                           height: "26px",
@@ -610,372 +927,154 @@ export default function Main({
                           zIndex: 2,
                         }}
                       >
-                        <XMarkIcon style={{ width: 16, height: 16, color: "#fff" }} />
+                        <XMarkIcon
+                          style={{ width: 16, height: 16, color: "#fff" }}
+                        />
                       </button>
                     )}
                   </div>
+                </div>
 
-                  {whereOpen && isWhereActive && (
-                    <div
-                      ref={whereDropdownRef}
-                      className="whereDropdown"
-                      style={dropdownViewportStyle}
-                    >
-                      <div className="whereDropdown__topbar">
-                            <span>{copy.chooseLocation}</span>
-                        <button
-                          type="button"
-                          className="whereDropdown__close"
-                          aria-label="Close location dropdown"
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => setWhereOpen(false)}
-                        >
-                          <XMarkIcon />
-                        </button>
-                      </div>
-                      {!hasTypedSearch ? (
-                        <>
-                          <div className="whereDropdown__header">
-                            <span className="whereDropdown__headerIcon">
-                              <PaperAirplaneIcon />
-                            </span>
-                            <span>{copy.airports}</span>
-                          </div>
+                <div className="search__divider" />
 
-                          {loadingOptions ? (
-                            <div className="whereDropdown__item whereDropdown__item--static">
-                              <span className="whereDropdown__icon">
-                                <PaperAirplaneIcon />
-                              </span>
+                <div className="search__item">
+                  <label>{copy.until}</label>
+                  <div style={{ position: "relative" }}>
+                    <DatePicker
+                      selected={untilDate}
+                      onChange={onUntilChange}
+                      onFocus={() => {
+                        if (isMobileViewport) return;
+                        setActivePanel("until");
+                      }}
+                      onCalendarOpen={() => {
+                        if (!isMobileViewport) {
+                          setActivePanel("until");
+                        }
+                      }}
+                      onCalendarClose={() => {
+                        if (!isMobileViewport) {
+                          setActivePanel(null);
+                        }
+                      }}
+                      onInputClick={() => {
+                        if (isMobileViewport) {
+                          openMobileCalendar("until");
+                          return;
+                        }
+                        setActivePanel("until");
+                      }}
+                      placeholderText={copy.addDates}
+                      dateFormat="dd MMM yyyy"
+                      minDate={fromDate || today}
+                      className="search__dateInput"
+                      popperPlacement="bottom-start"
+                      withPortal={false}
+                      inline={false}
+                      shouldCloseOnSelect={!isMobileViewport}
+                      customInput={
+                        isMobileViewport ? (
+                          <SearchDateInput
+                            className="search__dateInput search__dateInputButton"
+                            placeholder={copy.addDates}
+                          />
+                        ) : undefined
+                      }
+                      value={untilDate ? format(untilDate, "dd MMM yyyy") : undefined}
+                      open={!isMobileViewport ? undefined : false}
+                    />
+                    {(untilDate || (isMobileViewport && isUntilActive)) && (
+                      <button
+                        type="button"
+                        onClick={
+                          isMobileViewport && isUntilActive
+                            ? closeUntilPanel
+                            : clearUntilDate
+                        }
+                        aria-label={
+                          isMobileViewport && isUntilActive
+                            ? "Close until calendar"
+                            : "Clear until date"
+                        }
+                        style={{
+                          position: "absolute",
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          border: "none",
+                          background: "#000",
+                          borderRadius: "50%",
+                          width: "26px",
+                          height: "26px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: 0,
+                          zIndex: 2,
+                        }}
+                      >
+                        <XMarkIcon
+                          style={{ width: 16, height: 16, color: "#fff" }}
+                        />
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-                              <span className="whereDropdown__content">
-                                <span className="whereDropdown__title">{copy.loading}</span>
-                                <span className="whereDropdown__subtitle">
-                                  {copy.checkingAirports}
-                                </span>
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="whereDropdown__item whereDropdown__item--static">
-                              <span className="whereDropdown__icon">
-                                <PaperAirplaneIcon />
-                              </span>
+                <button
+                  className="search__button"
+                  type="button"
+                  onClick={handleSearchClick}
+                >
+                  {copy.search}
+                </button>
+              </div>
 
-                              <span className="whereDropdown__content">
-                                <span className="whereDropdown__title">
-                                  {copy.availableAirports(airportCount)}
-                                </span>
-                                <span className="whereDropdown__subtitle">
-                                  {copy.typeToSeeAirports}
-                                </span>
-                              </span>
-                            </div>
-                          )}
+              {isMobileCalendarOpen && (
+                <div
+                  className="mobileCalendarModal"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
+                  <div className="mobileCalendarModal__backdrop" />
+                  <div className="mobileCalendarModal__dialog">
+                    <div className="mobileCalendarModal__header">
+                      <span className="mobileCalendarModal__title">
+                        {isFromActive ? copy.from : copy.until}
+                      </span>
+                      <button
+                        type="button"
+                        className="mobileCalendarModal__close"
+                        onClick={closeMobileCalendar}
+                        aria-label="Close calendar"
+                      >
+                        <XMarkIcon />
+                      </button>
+                    </div>
 
-                          <div className="whereDropdown__header whereDropdown__header--cities">
-                            <span className="whereDropdown__headerIcon">
-                              <BuildingOffice2Icon />
-                            </span>
-                            <span>{copy.cities}</span>
-                          </div>
+                    <div className="mobileCalendarModal__body">
+                      {isFromActive && (
+                        <DatePicker
+                          inline
+                          selected={fromDate}
+                          onChange={onFromChange}
+                          minDate={today}
+                        />
+                      )}
 
-                          <div className="whereDropdown__item whereDropdown__item--city whereDropdown__item--static">
-                            <span className="whereDropdown__icon">
-                              <MagnifyingGlassIcon />
-                            </span>
-
-                            <span className="whereDropdown__content">
-                              <span className="whereDropdown__title">
-                                {copy.availableCities(cityCount)}
-                              </span>
-                              <span className="whereDropdown__subtitle">
-                                {copy.typeToSeeCities}
-                              </span>
-                            </span>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="whereDropdown__header">
-                            <span className="whereDropdown__headerIcon">
-                              <PaperAirplaneIcon />
-                            </span>
-                            <span>{copy.airports}</span>
-                          </div>
-
-                          {loadingOptions ? (
-                            <div className="whereDropdown__item whereDropdown__item--static">
-                              <span className="whereDropdown__icon">
-                                <PaperAirplaneIcon />
-                              </span>
-
-                              <span className="whereDropdown__content">
-                                <span className="whereDropdown__title">{copy.loading}</span>
-                                <span className="whereDropdown__subtitle">
-                                  {copy.searchingAirports}
-                                </span>
-                              </span>
-                            </div>
-                          ) : airportOptions.length > 0 ? (
-                            airportOptions.map((airport) => (
-                              <button
-                                key={airport.id}
-                                type="button"
-                                className="whereDropdown__item"
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => handleOptionPick(airport)}
-                              >
-                                <span className="whereDropdown__icon">
-                                  <PaperAirplaneIcon />
-                                </span>
-
-                                <span className="whereDropdown__content">
-                                  <span className="whereDropdown__title">
-                                    {airport.title}
-                                  </span>
-                                  <span className="whereDropdown__subtitle">
-                                    {airport.subtitle}
-                                  </span>
-                                </span>
-                              </button>
-                            ))
-                          ) : (
-                            <div className="whereDropdown__item whereDropdown__item--static">
-                              <span className="whereDropdown__icon">
-                                <PaperAirplaneIcon />
-                              </span>
-
-                              <span className="whereDropdown__content">
-                                <span className="whereDropdown__title">
-                                  {copy.noAirportResults}
-                                </span>
-                                <span className="whereDropdown__subtitle">
-                                  {copy.tryAirport}
-                                </span>
-                              </span>
-                            </div>
-                          )}
-
-                          <div className="whereDropdown__header whereDropdown__header--cities">
-                            <span className="whereDropdown__headerIcon">
-                              <BuildingOffice2Icon />
-                            </span>
-                            <span>{copy.cities}</span>
-                          </div>
-
-                          {cityOptions.length > 0 ? (
-                            cityOptions.map((city) => (
-                              <button
-                                key={city.id}
-                                type="button"
-                                className="whereDropdown__item whereDropdown__item--city"
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => handleOptionPick(city)}
-                              >
-                                <span className="whereDropdown__icon">
-                                  <MagnifyingGlassIcon />
-                                </span>
-
-                                <span className="whereDropdown__content">
-                                  <span className="whereDropdown__title">
-                                    {city.title}
-                                  </span>
-                                  <span className="whereDropdown__subtitle">
-                                    {city.subtitle}
-                                  </span>
-                                </span>
-                              </button>
-                            ))
-                          ) : (
-                            <button
-                              type="button"
-                              className="whereDropdown__item whereDropdown__item--city"
-                              onMouseDown={(e) => e.preventDefault()}
-                              onClick={() => handleOptionPick(buildManualCityItem(cityValue))}
-                            >
-                              <span className="whereDropdown__icon">
-                                <MagnifyingGlassIcon />
-                              </span>
-
-                              <span className="whereDropdown__content">
-                                <span className="whereDropdown__title">{cityValue}</span>
-                                <span className="whereDropdown__subtitle">{copy.city}</span>
-                              </span>
-                            </button>
-                          )}
-                        </>
+                      {isUntilActive && (
+                        <DatePicker
+                          inline
+                          selected={untilDate}
+                          onChange={onUntilChange}
+                          minDate={fromDate || today}
+                        />
                       )}
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-
-              <div className="search__divider" />
-
-              <div className="search__item">
-                <label>{copy.from}</label>
-                <div style={{ position: "relative" }}>
-                  <DatePicker
-                    selected={fromDate}
-                    onChange={onFromChange}
-                    onFocus={() => {
-                      if (isMobileViewport) {
-                        setWhereOpen(false);
-                        setActivePanel("from");
-                      }
-                    }}
-                    onCalendarOpen={() => {
-                      if (!isMobileViewport) {
-                        setActivePanel("from");
-                      }
-                    }}
-                    onCalendarClose={() => {
-                      if (!isMobileViewport) {
-                        setActivePanel(null);
-                      }
-                    }}
-                    onInputClick={() => {
-                      if (isMobileViewport) {
-                        setWhereOpen(false);
-                        setActivePanel("from");
-                      }
-                    }}
-                    placeholderText={copy.addDates}
-                    dateFormat="dd MMM yyyy"
-                    className="search__dateInput"
-                    popperPlacement="bottom-start"
-                    minDate={today}
-                    withPortal={false}
-                    inline={isMobileViewport && isFromActive}
-                    shouldCloseOnSelect={!isMobileViewport}
-                    customInput={
-                      isMobileViewport ? (
-                        <SearchDateInput
-                          className="search__dateInput search__dateInputButton"
-                          placeholder={copy.addDates}
-                        />
-                      ) : undefined
-                    }
-                    value={
-                      fromDate ? format(fromDate, "dd MMM yyyy") : undefined
-                    }
-                  />
-                  {(fromDate || (isMobileViewport && isFromActive)) && (
-                    <button
-                      type="button"
-                      onClick={isMobileViewport && isFromActive ? closeFromPanel : clearFromDate}
-                      aria-label={isMobileViewport && isFromActive ? "Close from calendar" : "Clear from date"}
-                      style={{
-                        position: "absolute",
-                        right: "10px",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        border: "none",
-                        background: "#000",
-                        borderRadius: "50%",
-                        width: "26px",
-                        height: "26px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: 0,
-                        zIndex: 2,
-                      }}
-                    >
-                      <XMarkIcon style={{ width: 16, height: 16, color: "#fff" }} />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div className="search__divider" />
-
-              <div className="search__item">
-                <label>{copy.until}</label>
-                <div style={{ position: "relative" }}>
-                  <DatePicker
-                    selected={untilDate}
-                    onChange={onUntilChange}
-                    onFocus={() => {
-                      if (isMobileViewport) {
-                        setWhereOpen(false);
-                        setActivePanel("until");
-                      }
-                    }}
-                    onCalendarOpen={() => {
-                      if (!isMobileViewport) {
-                        setActivePanel("until");
-                      }
-                    }}
-                    onCalendarClose={() => {
-                      if (!isMobileViewport) {
-                        setActivePanel(null);
-                      }
-                    }}
-                    onInputClick={() => {
-                      if (isMobileViewport) {
-                        setWhereOpen(false);
-                        setActivePanel("until");
-                      }
-                    }}
-                    placeholderText={copy.addDates}
-                    dateFormat="dd MMM yyyy"
-                    minDate={fromDate || today}
-                    className="search__dateInput"
-                    popperPlacement="bottom-start"
-                    withPortal={false}
-                    inline={isMobileViewport && isUntilActive}
-                    shouldCloseOnSelect={!isMobileViewport}
-                    customInput={
-                      isMobileViewport ? (
-                        <SearchDateInput
-                          className="search__dateInput search__dateInputButton"
-                          placeholder={copy.addDates}
-                        />
-                      ) : undefined
-                    }
-                    value={
-                      untilDate ? format(untilDate, "dd MMM yyyy") : undefined
-                    }
-                  />
-                  {(untilDate || (isMobileViewport && isUntilActive)) && (
-                    <button
-                      type="button"
-                      onClick={isMobileViewport && isUntilActive ? closeUntilPanel : clearUntilDate}
-                      aria-label={isMobileViewport && isUntilActive ? "Close until calendar" : "Clear until date"}
-                      style={{
-                        position: "absolute",
-                        right: "10px",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        border: "none",
-                        background: "#000",
-                        borderRadius: "50%",
-                        width: "26px",
-                        height: "26px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: 0,
-                        zIndex: 2,
-                      }}
-                    >
-                      <XMarkIcon style={{ width: 16, height: 16, color: "#fff" }} />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <button
-                className="search__button"
-                type="button"
-                onClick={handleSearchClick}
-              >
-                {copy.search}
-              </button>
-            </div>
+              )}
             </div>
           </div>
 
