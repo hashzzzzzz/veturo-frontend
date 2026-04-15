@@ -500,6 +500,11 @@ export default function Main({
     submitWithItem(selectedOption, null, untilDate);
   }
 
+  function closeFromPanel() {
+    clearFromDate();
+    setActivePanel(null);
+  }
+
   function clearUntilDate() {
     setUntilDate(null);
     setSearchError("");
@@ -509,6 +514,11 @@ export default function Main({
     }
 
     submitWithItem(selectedOption, fromDate, null);
+  }
+
+  function closeUntilPanel() {
+    clearUntilDate();
+    setActivePanel(null);
   }
 
   useEffect(() => {
@@ -847,11 +857,11 @@ export default function Main({
                       fromDate ? format(fromDate, "dd MMM yyyy") : undefined
                     }
                   />
-                  {fromDate && (
+                  {(fromDate || (isMobileViewport && isFromActive)) && (
                     <button
                       type="button"
-                      onClick={clearFromDate}
-                      aria-label="Clear from date"
+                      onClick={isMobileViewport && isFromActive ? closeFromPanel : clearFromDate}
+                      aria-label={isMobileViewport && isFromActive ? "Close from calendar" : "Clear from date"}
                       style={{
                         position: "absolute",
                         right: "10px",
@@ -931,11 +941,11 @@ export default function Main({
                       untilDate ? format(untilDate, "dd MMM yyyy") : undefined
                     }
                   />
-                  {untilDate && (
+                  {(untilDate || (isMobileViewport && isUntilActive)) && (
                     <button
                       type="button"
-                      onClick={clearUntilDate}
-                      aria-label="Clear until date"
+                      onClick={isMobileViewport && isUntilActive ? closeUntilPanel : clearUntilDate}
+                      aria-label={isMobileViewport && isUntilActive ? "Close until calendar" : "Clear until date"}
                       style={{
                         position: "absolute",
                         right: "10px",
