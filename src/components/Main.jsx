@@ -445,6 +445,10 @@ export default function Main({
     if (selectedOption) {
       submitWithItem(selectedOption, date, nextUntilDate);
     }
+
+    if (isMobileViewport) {
+      setActivePanel(null);
+    }
   }
 
   function onUntilChange(date) {
@@ -457,6 +461,10 @@ export default function Main({
 
     if (selectedOption) {
       submitWithItem(selectedOption, fromDate, date);
+    }
+
+    if (isMobileViewport) {
+      setActivePanel(null);
     }
   }
 
@@ -840,11 +848,6 @@ export default function Main({
                     withPortal={false}
                     inline={isMobileViewport && isFromActive}
                     shouldCloseOnSelect={!isMobileViewport}
-                    onSelect={() => {
-                      if (isMobileViewport) {
-                        setActivePanel(null);
-                      }
-                    }}
                     customInput={
                       isMobileViewport ? (
                         <SearchDateInput
@@ -924,11 +927,6 @@ export default function Main({
                     withPortal={false}
                     inline={isMobileViewport && isUntilActive}
                     shouldCloseOnSelect={!isMobileViewport}
-                    onSelect={() => {
-                      if (isMobileViewport) {
-                        setActivePanel(null);
-                      }
-                    }}
                     customInput={
                       isMobileViewport ? (
                         <SearchDateInput
