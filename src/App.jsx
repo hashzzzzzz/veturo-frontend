@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
   Link,
+  useLocation,
 } from "react-router-dom";
 import Navbar from "./components/navbar";
 import Main from "./components/Main";
@@ -69,6 +70,117 @@ function readStoredJson(key, fallback) {
     localStorage.removeItem(key);
     return fallback;
   }
+}
+
+function setMetaByName(name, content) {
+  let element = document.head.querySelector(`meta[name="${name}"]`);
+
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute("name", name);
+    document.head.appendChild(element);
+  }
+
+  element.setAttribute("content", content);
+}
+
+function setMetaByProperty(property, content) {
+  let element = document.head.querySelector(`meta[property="${property}"]`);
+
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute("property", property);
+    document.head.appendChild(element);
+  }
+
+  element.setAttribute("content", content);
+}
+
+function setCanonical(url) {
+  let link = document.head.querySelector('link[rel="canonical"]');
+
+  if (!link) {
+    link = document.createElement("link");
+    link.setAttribute("rel", "canonical");
+    document.head.appendChild(link);
+  }
+
+  link.setAttribute("href", url);
+}
+
+function SeoMeta({ language }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    const origin = "https://veturocars.com";
+    const pathname = location.pathname || "/";
+    const canonicalUrl = new URL(pathname, origin).toString();
+    const siteName = "Veturo Cars";
+    const keywords = [
+      "kerre me qera",
+      "kerre me qera kosove",
+      "kerre me qera prishtine",
+      "rent a car kosova",
+      "rent a car prishtina",
+      "rent a car albania",
+      "rent a car tirana",
+      "rent a car skopje",
+      "airport car rental kosovo",
+      "airport car rental albania",
+      "cheap rent a car kosova",
+      "veturo cars",
+      "car rental balkans",
+    ].join(", ");
+
+    const routeMeta = {
+      "/": {
+        title: "Veturo Cars | Premium Rent a Car in Kosovo, Albania and the Balkans",
+        description:
+          "Veturo Cars makes premium car rental simple across Kosovo, Prishtina, Albania, Tirana, Skopje and key Balkan airports with direct city and airport search.",
+      },
+      "/become-host": {
+        title: "Become a Host | Veturo Cars",
+        description:
+          "Join Veturo Cars as a host and list premium vehicles for travelers searching airport and city car rental across Kosovo, Albania and the Balkans.",
+      },
+      "/hosts": {
+        title: "Host Login | Veturo Cars",
+        description:
+          "Access the Veturo Cars host area to manage your listings, bookings and availability for premium Balkan car rental guests.",
+      },
+    };
+
+    const fallbackMeta = {
+      title: `${siteName} | Premium Balkan Car Rental`,
+      description:
+        "Discover premium airport and city car rental with Veturo Cars across Kosovo, Albania, North Macedonia and the wider Balkans.",
+    };
+
+    const pageMeta = pathname.startsWith("/cars/")
+      ? {
+          title: `${siteName} | Car Details`,
+          description:
+            "View Veturo Cars availability, pricing and booking details for premium rental vehicles in top Balkan cities and airports.",
+        }
+      : routeMeta[pathname] || fallbackMeta;
+
+    document.title = pageMeta.title;
+    document.documentElement.lang = language === "al" ? "sq" : "en";
+
+    setMetaByName("description", pageMeta.description);
+    setMetaByName("keywords", keywords);
+    setMetaByProperty("og:type", pathname === "/" ? "website" : "article");
+    setMetaByProperty("og:site_name", siteName);
+    setMetaByProperty("og:title", pageMeta.title);
+    setMetaByProperty("og:description", pageMeta.description);
+    setMetaByProperty("og:url", canonicalUrl);
+    setMetaByName("twitter:card", "summary_large_image");
+    setMetaByName("twitter:title", pageMeta.title);
+    setMetaByName("twitter:description", pageMeta.description);
+    setCanonical(canonicalUrl);
+  }, [language, location.pathname]);
+
+  return null;
 }
 
 function RequireHost({ children }) {
@@ -191,6 +303,8 @@ function App() {
 
   return (
     <BrowserRouter>
+      <SeoMeta language={selectedLanguage} />
+
       <Navbar
         user={user}
         favorites={favorites}

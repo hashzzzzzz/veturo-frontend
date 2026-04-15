@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import {
   PaperAirplaneIcon,
-  MapPinIcon,
   MagnifyingGlassIcon,
   BuildingOffice2Icon,
 } from "@heroicons/react/24/outline";
@@ -45,8 +44,6 @@ export default function Main({
       where: "Where",
       wherePlaceholder: "City, airport, address or hotel",
       chooseLocation: "Choose location",
-      nearby: "Nearby",
-      shareLocation: "Share my location",
       airports: "Airports",
       cities: "Cities",
       loading: "Loading...",
@@ -70,8 +67,6 @@ export default function Main({
       where: "Ku",
       wherePlaceholder: "Qytet, aeroport, adrese ose hotel",
       chooseLocation: "Zgjidh lokacionin",
-      nearby: "Afer meje",
-      shareLocation: "Ndaj lokacionin tim",
       airports: "Aeroportet",
       cities: "Qytetet",
       loading: "Duke u ngarkuar...",
@@ -112,8 +107,27 @@ export default function Main({
       : null
   );
   const [searchError, setSearchError] = useState("");
+  const [activeField, setActiveField] = useState(null);
+  const [isMobileViewport, setIsMobileViewport] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth <= 768;
+  });
 
   const whereRef = useRef(null);
+  const searchWrapRef = useRef(null);
+
+  const isSearchOverlayActive = isMobileViewport && (whereOpen || activeField);
+
+  function scrollSearchIntoView(behavior = "smooth") {
+    if (!isMobileViewport) return;
+
+    window.setTimeout(() => {
+      searchWrapRef.current?.scrollIntoView({
+        behavior,
+        block: "start",
+      });
+    }, 120);
+  }
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -127,6 +141,49 @@ export default function Main({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const updateViewport = (event) => {
+      setIsMobileViewport(event.matches);
+    };
+
+    setIsMobileViewport(mediaQuery.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updateViewport);
+      return () => mediaQuery.removeEventListener("change", updateViewport);
+    }
+
+    mediaQuery.addListener(updateViewport);
+    return () => mediaQuery.removeListener(updateViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!whereOpen && activeField === "where") {
+      setActiveField(null);
+    }
+  }, [whereOpen, activeField]);
+
+  useEffect(() => {
+    if (!isSearchOverlayActive) return;
+
+    scrollSearchIntoView();
+
+    if (!window.visualViewport) return;
+
+    const keepSearchVisible = () => {
+      scrollSearchIntoView("auto");
+    };
+
+    window.visualViewport.addEventListener("resize", keepSearchVisible);
+    window.visualViewport.addEventListener("scroll", keepSearchVisible);
+
+    return () => {
+      window.visualViewport.removeEventListener("resize", keepSearchVisible);
+      window.visualViewport.removeEventListener("scroll", keepSearchVisible);
+    };
+  }, [isSearchOverlayActive]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -239,49 +296,6 @@ export default function Main({
     setSelectedOption(item);
     setSearchError("");
     submitWithItem(item);
-  }
-
-  function handleNearbyClick() {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported on this device.");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const label = `Nearby me (${latitude.toFixed(3)}, ${longitude.toFixed(3)})`;
-
-        const nearbyItem = {
-          id: label,
-          type: "nearby",
-          title: label,
-          value: "",
-          airportCode: "",
-          targetSectionKey: "",
-        };
-
-        setWhere(label);
-        setWhereOpen(false);
-        setSelectedOption(nearbyItem);
-        setSearchError("");
-
-        onSearchSubmit?.({
-          where: label,
-          type: "nearby",
-          city: "",
-          airport: "",
-          targetSectionKey: "",
-          latitude,
-          longitude,
-          fromDate,
-          untilDate,
-        });
-      },
-      () => {
-        alert("Location access was denied or unavailable.");
-      }
-    );
   }
 
   function findBestOptionFromWhere() {
@@ -429,7 +443,10 @@ export default function Main({
             <p className="hero__eyebrow">{copy.eyebrow}</p>
           </div>
 
-          <div className="hero__searchWrap">
+          <div
+            ref={searchWrapRef}
+            className={`hero__searchWrap ${isSearchOverlayActive ? "hero__searchWrap--active" : ""}`}
+          >
             <div className="hero__search">
               <div className="search__item search__item--where">
                 <label>{copy.where}</label>
@@ -440,7 +457,11 @@ export default function Main({
                       type="text"
                       placeholder={copy.wherePlaceholder}
                       value={where}
-                      onFocus={() => setWhereOpen(true)}
+                      onFocus={() => {
+                        setActiveField("where");
+                        setWhereOpen(true);
+                        scrollSearchIntoView();
+                      }}
                       onChange={(e) => handleWhereChange(e.target.value)}
                       style={{ paddingRight: where ? "42px" : undefined }}
                     />
@@ -487,24 +508,6 @@ export default function Main({
                           <XMarkIcon />
                         </button>
                       </div>
-
-                      <button
-                        type="button"
-                        className="whereDropdown__nearby"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={handleNearbyClick}
-                      >
-                        <span className="whereDropdown__nearbyIcon">
-                          <MapPinIcon />
-                        </span>
-                        <span className="whereDropdown__nearbyText">
-                          <span className="whereDropdown__title">{copy.nearby}</span>
-                          <span className="whereDropdown__subtitle">
-                            {copy.shareLocation}
-                          </span>
-                        </span>
-                      </button>
-
                       {!hasTypedSearch ? (
                         <>
                           <div className="whereDropdown__header">
@@ -690,11 +693,25 @@ export default function Main({
                   <DatePicker
                     selected={fromDate}
                     onChange={onFromChange}
+                    onFocus={() => {
+                      setActiveField("from");
+                      scrollSearchIntoView();
+                    }}
+                    onCalendarOpen={() => {
+                      setActiveField("from");
+                      scrollSearchIntoView();
+                    }}
+                    onCalendarClose={() => setActiveField(null)}
+                    onInputClick={() => {
+                      setActiveField("from");
+                      scrollSearchIntoView();
+                    }}
                     placeholderText={copy.addDates}
                     dateFormat="dd MMM yyyy"
                     className="search__dateInput"
                     popperPlacement="bottom-start"
                     minDate={today}
+                    withPortal={isMobileViewport}
                   />
                   {fromDate && (
                     <button
@@ -733,11 +750,25 @@ export default function Main({
                   <DatePicker
                     selected={untilDate}
                     onChange={onUntilChange}
+                    onFocus={() => {
+                      setActiveField("until");
+                      scrollSearchIntoView();
+                    }}
+                    onCalendarOpen={() => {
+                      setActiveField("until");
+                      scrollSearchIntoView();
+                    }}
+                    onCalendarClose={() => setActiveField(null)}
+                    onInputClick={() => {
+                      setActiveField("until");
+                      scrollSearchIntoView();
+                    }}
                     placeholderText={copy.addDates}
                     dateFormat="dd MMM yyyy"
                     minDate={fromDate || today}
                     className="search__dateInput"
                     popperPlacement="bottom-start"
+                    withPortal={isMobileViewport}
                   />
                   {untilDate && (
                     <button
