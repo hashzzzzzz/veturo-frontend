@@ -136,6 +136,7 @@ export default function Main({
   const whereRef = useRef(null);
   const searchWrapRef = useRef(null);
   const whereInputRef = useRef(null);
+  const whereDropdownRef = useRef(null);
 
   const isSearchOverlayActive = isMobileViewport && whereOpen;
 
@@ -153,12 +154,17 @@ export default function Main({
   function moveWhereSearchToTop() {
     if (!isMobileViewport) return;
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo(0, 0);
+    scrollSearchIntoView("auto", "start");
+  }
 
-    scrollSearchIntoView("smooth", "start");
+  function resetWhereDropdownScroll() {
+    if (!whereDropdownRef.current) return;
+
+    whereDropdownRef.current.scrollTo({
+      top: 0,
+      behavior: "auto",
+    });
   }
 
   function updateMobileWhereDropdownPosition() {
@@ -240,6 +246,12 @@ export default function Main({
   useEffect(() => {
     updateMobileWhereDropdownPosition();
   }, [isMobileViewport, whereOpen, where]);
+
+  useEffect(() => {
+    if (!whereOpen) return;
+
+    resetWhereDropdownScroll();
+  }, [whereOpen, where]);
 
   useEffect(() => {
     const shouldHideChrome = isMobileViewport && isSearchOverlayActive;
@@ -563,7 +575,11 @@ export default function Main({
                   </div>
 
                   {whereOpen && (
-                    <div className="whereDropdown" style={dropdownViewportStyle}>
+                    <div
+                      ref={whereDropdownRef}
+                      className="whereDropdown"
+                      style={dropdownViewportStyle}
+                    >
                       <div className="whereDropdown__topbar">
                             <span>{copy.chooseLocation}</span>
                         <button
