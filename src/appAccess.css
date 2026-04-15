@@ -37,6 +37,12 @@
 }
 
 @media (max-width: 768px) {
+  body.mobileSearchActive .appQuickAccess {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
   .appQuickAccess {
     right: 12px;
     bottom: 12px;

@@ -231,6 +231,16 @@ export default function Main({
   }, [isMobileViewport, whereOpen, where]);
 
   useEffect(() => {
+    const shouldHideChrome = isMobileViewport && isSearchOverlayActive;
+
+    document.body.classList.toggle("mobileSearchActive", shouldHideChrome);
+
+    return () => {
+      document.body.classList.remove("mobileSearchActive");
+    };
+  }, [isMobileViewport, isSearchOverlayActive]);
+
+  useEffect(() => {
     const controller = new AbortController();
 
     const fetchOptions = async () => {
@@ -483,7 +493,7 @@ export default function Main({
       >
         <div className="hero__overlay" />
 
-        <div className="hero__content">
+        <div className={`hero__content ${isSearchOverlayActive ? "hero__content--searchActive" : ""}`}>
           <div className="hero__text">
             <p className="hero__eyebrow">{copy.eyebrow}</p>
           </div>

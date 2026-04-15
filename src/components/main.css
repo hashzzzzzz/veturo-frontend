@@ -456,8 +456,8 @@
 
   .hero__content {
     min-height: 500px;
-    justify-content: flex-start;
-    padding: 6px 16px 28px;
+    justify-content: center;
+    padding: 28px 16px 20px;
   }
 
   .hero__title {
@@ -465,12 +465,18 @@
   }
 
   .hero__searchWrap {
-    margin-top: 10px;
+    margin-top: 18px;
   }
 
   .hero__searchWrap--active {
     margin-top: 6px;
     align-self: stretch;
+  }
+
+  .hero__content--searchActive {
+    justify-content: flex-start;
+    padding-top: 6px;
+    padding-bottom: 28px;
   }
 
   .hero__search {

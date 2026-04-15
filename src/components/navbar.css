@@ -416,6 +416,13 @@
 }
 
 @media (max-width: 768px) {
+  body.mobileSearchActive .navbar,
+  body.mobileSearchActive .welcomePopup {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
   .navbar__favoritesDropdown,
   .navbar__dropdown {
     position: fixed;
