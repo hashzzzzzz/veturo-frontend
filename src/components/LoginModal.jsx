@@ -14,6 +14,10 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
       minPassword: "Password must be at least 6 characters.",
       wrongPassword: "This password is incorrect.",
       loginFailed: "Login failed. Please try again.",
+      verifyFirst: "Please verify your email before logging in.",
+      resendVerification: "Resend verification email",
+      resendingVerification: "Sending...",
+      verificationSent: "We sent a fresh verification link. Check your email before logging in.",
       googleFailed: "Google login failed. Try email login.",
       addRecover: "Add your email address for your recover link.",
       recoverSent: (email) => `Recover link sent successfully to ${email}.`,
@@ -45,6 +49,10 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
       minPassword: "Fjalekalimi duhet te kete te pakten 6 karaktere.",
       wrongPassword: "Ky fjalekalim eshte i pasakte.",
       loginFailed: "Hyrja deshtoi. Ju lutem provoni perseri.",
+      verifyFirst: "Ju lutem verifikoni emailin para hyrjes.",
+      resendVerification: "Dergo perseri emailin e verifikimit",
+      resendingVerification: "Duke derguar...",
+      verificationSent: "Ju derguam nje link te ri verifikimi. Kontrolloni emailin para hyrjes.",
       googleFailed: "Hyrja me Google deshtoi. Provoni me email.",
       addRecover: "Shtoni emailin tuaj per linkun e rikuperimit.",
       recoverSent: (email) => `Linku i rikuperimit u dergua me sukses te ${email}.`,
@@ -78,6 +86,8 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
   const [recoverEmail, setRecoverEmail] = useState("");
   const [recoverMessage, setRecoverMessage] = useState("");
   const [recoverLoading, setRecoverLoading] = useState(false);
+  const [canResendVerification, setCanResendVerification] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
 
   if (!isOpen) return null;
 
@@ -118,6 +128,7 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
     if (!validateForm()) return;
 
     setLoading(true);
+    setCanResendVerification(false);
 
     try {
       const res = await axios.post(`${API_URL}/auth/login`, {
@@ -128,11 +139,18 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
       saveSession(res.data);
     } catch (error) {
       const backendMessage = error.response?.data?.message || "";
+      const needsVerification =
+        error.response?.data?.code === "EMAIL_NOT_VERIFIED" ||
+        backendMessage.toLowerCase().includes("verify your email");
+
       setFormError(
         backendMessage === "Invalid credentials"
           ? copy.wrongPassword
+          : needsVerification
+          ? backendMessage || copy.verifyFirst
           : backendMessage || copy.loginFailed
       );
+      setCanResendVerification(needsVerification);
       setRecoverEmail(email.trim());
     } finally {
       setLoading(false);
@@ -181,6 +199,32 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
     }
   };
 
+  const handleResendVerification = async () => {
+    const safeEmail = email.trim();
+
+    if (!safeEmail || !safeEmail.includes("@")) {
+      setFormError(copy.validEmail);
+      return;
+    }
+
+    try {
+      setResendingVerification(true);
+      const res = await axios.post(`${API_URL}/auth/resend-verification`, {
+        email: safeEmail,
+      });
+      const devLink = res.data.verificationUrl
+        ? ` Dev link: ${res.data.verificationUrl}`
+        : "";
+
+      setFormError(`${res.data.message || copy.verificationSent}${devLink}`);
+      setCanResendVerification(true);
+    } catch (error) {
+      setFormError(error.response?.data?.message || copy.loginFailed);
+    } finally {
+      setResendingVerification(false);
+    }
+  };
+
   return (
     <div className="loginModalOverlay" onClick={onClose}>
       <div
@@ -216,6 +260,7 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
             onChange={(e) => {
               setEmail(e.target.value);
               setFormError("");
+              setCanResendVerification(false);
             }}
           />
         </div>
@@ -233,11 +278,24 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
             onChange={(e) => {
               setPassword(e.target.value);
               setFormError("");
+              setCanResendVerification(false);
             }}
           />
         </div>
 
         {formError && <p className="authMessage">{formError}</p>}
+        {canResendVerification && (
+          <button
+            className="resendVerificationBtn"
+            type="button"
+            onClick={handleResendVerification}
+            disabled={resendingVerification}
+          >
+            {resendingVerification
+              ? copy.resendingVerification
+              : copy.resendVerification}
+          </button>
+        )}
 
         <button
           className={`forgotPasswordBtn ${

@@ -56,6 +56,49 @@
   color: #991b1b;
 }
 
+.verifyEmailResend {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.verifyEmailResend input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(24, 24, 27, 0.14);
+  border-radius: 12px;
+  padding: 0 14px;
+  color: #111113;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.verifyEmailResend button {
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #111113;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.verifyEmailResend button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.verifyEmailResend p {
+  margin: 0;
+  border-radius: 12px;
+  background: #f4f4f5;
+  color: #3f3f46;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 .verifyEmailActions {
   display: flex;
   justify-content: center;

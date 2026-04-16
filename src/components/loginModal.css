@@ -124,6 +124,24 @@
   opacity: 0.7;
 }
 
+.resendVerificationBtn {
+  width: 100%;
+  min-height: 42px;
+  margin: 0 0 10px;
+  border: 1px solid rgba(24, 24, 27, 0.12);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resendVerificationBtn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .loginContinueBtn:hover,
 .socialBtn:hover {
   transform: translateY(-1px);

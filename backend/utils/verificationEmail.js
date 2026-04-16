@@ -4,8 +4,15 @@ function getClientUrl() {
   return (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, "");
 }
 
+function getServerUrl() {
+  return (process.env.SERVER_URL || "http://localhost:5000").replace(/\/$/, "");
+}
+
 function getEmailFromAddress() {
-  return process.env.EMAIL_FROM || "Veturo <veturoballans@gmail.com>";
+  if (process.env.EMAIL_FROM) return process.env.EMAIL_FROM;
+  if (process.env.EMAIL_USER) return `Veturo <${process.env.EMAIL_USER}>`;
+
+  return "Veturo <noreply@example.com>";
 }
 
 function createTransporter() {
@@ -29,9 +36,10 @@ function buildVerificationHtml(name, verifyUrl) {
     <div style="font-family:Arial,sans-serif;background:#f4f4f5;padding:28px;color:#18181b;">
       <div style="max-width:540px;margin:0 auto;background:#ffffff;border-radius:22px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.12);">
         <h1 style="margin:0 0 12px;font-size:26px;">Verify your Veturo account</h1>
-        <p style="margin:0 0 22px;line-height:1.55;color:#52525b;">Hi ${firstName}, click the button below to verify your email and unlock your account.</p>
+        <p style="margin:0 0 22px;line-height:1.55;color:#52525b;">Hi ${firstName}, thanks for signing up for Veturo. Click the button below to verify your email and finish setting up your account.</p>
         <a href="${verifyUrl}" style="display:inline-block;background:#18181b;color:#ffffff;text-decoration:none;border-radius:999px;padding:13px 22px;font-weight:700;">Verify email</a>
-        <p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:#71717a;">If the button does not work, paste this link in your browser:<br>${verifyUrl}</p>
+        <p style="margin:22px 0 0;font-size:13px;line-height:1.5;color:#71717a;">This link expires in 30 minutes and can only be used once.</p>
+        <p style="margin:12px 0 0;font-size:13px;line-height:1.5;color:#71717a;">If the button does not work, paste this link in your browser:<br>${verifyUrl}</p>
       </div>
     </div>
   `;
@@ -60,6 +68,10 @@ export function getPasswordResetUrl(token) {
   return `${getClientUrl()}/reset-password/${token}`;
 }
 
+export function getApiBaseUrl() {
+  return getServerUrl();
+}
+
 export async function sendVerificationEmail({ to, name, verifyUrl }) {
   const transporter = createTransporter();
 
@@ -76,7 +88,16 @@ export async function sendVerificationEmail({ to, name, verifyUrl }) {
     to,
     subject: "Verify your Veturo account",
     html: buildVerificationHtml(name, verifyUrl),
-    text: `Verify your Veturo account: ${verifyUrl}`,
+    text: [
+      "Verify your Veturo account",
+      "",
+      `Hi ${name?.trim()?.split(/\s+/)?.[0] || "there"},`,
+      "Thanks for signing up for Veturo. Use the link below to verify your email.",
+      "",
+      verifyUrl,
+      "",
+      "This link expires in 30 minutes and can only be used once.",
+    ].join("\n"),
   });
 
   return { sent: true };

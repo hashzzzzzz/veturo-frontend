@@ -14,6 +14,7 @@ import {
 } from "../utils/verificationEmail.js";
 
 const router = express.Router();
+const VERIFICATION_TOKEN_EXPIRES_MS = 30 * 60 * 1000;
 
 const signToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -29,13 +30,27 @@ const hashPasswordResetToken = (token) => {
   return crypto.createHash("sha256").update(token).digest("hex");
 };
 
+const createVerificationToken = () => {
+  const rawToken = crypto.randomBytes(32).toString("hex");
+
+  return {
+    rawToken,
+    tokenHash: hashVerificationToken(rawToken),
+    expiresAt: new Date(Date.now() + VERIFICATION_TOKEN_EXPIRES_MS),
+  };
+};
+
+const isValidEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
 router.post("/google", googleAuth);
 
 router.post("/forgot-password", async (req, res) => {
   try {
     const email = `${req.body.email || ""}`.trim().toLowerCase();
 
-    if (!email || !email.includes("@")) {
+    if (!email || !isValidEmail(email)) {
       return res.status(400).json({ message: "Please enter a valid email" });
     }
 
@@ -130,7 +145,7 @@ router.post("/signup", async (req, res) => {
         .json({ message: "Name, email and password are required" });
     }
 
-    if (!email.includes("@")) {
+    if (!isValidEmail(email)) {
       return res.status(400).json({ message: "Please enter a valid email" });
     }
 
@@ -142,17 +157,16 @@ router.post("/signup", async (req, res) => {
 
     const existingUser = await User.findOne({ email });
 
-    if (existingUser?.isVerified) {
-      if (existingUser.password) {
-        return res.status(400).json({
-          message: "An account with this email already exists. Please log in.",
-        });
-      }
+    if (existingUser && existingUser.isVerified !== false) {
+      return res.status(400).json({
+        message:
+          existingUser.provider === "google" && !existingUser.password
+            ? "An account with this email already exists. Continue with Google."
+            : "An account with this email already exists. Please log in.",
+      });
     }
 
-    const rawToken = crypto.randomBytes(32).toString("hex");
-    const verificationToken = hashVerificationToken(rawToken);
-    const verificationExpires = new Date(Date.now() + 30 * 60 * 1000);
+    const { rawToken, tokenHash, expiresAt } = createVerificationToken();
 
     const user =
       existingUser ||
@@ -165,10 +179,10 @@ router.post("/signup", async (req, res) => {
     user.name = name;
     user.email = email;
     user.password = password;
-    user.provider = existingUser?.googleId ? "google" : "local";
-    user.isVerified = existingUser?.googleId ? true : false;
-    user.emailVerificationToken = verificationToken;
-    user.emailVerificationExpires = verificationExpires;
+    user.provider = "local";
+    user.isVerified = false;
+    user.emailVerificationToken = tokenHash;
+    user.emailVerificationExpires = expiresAt;
 
     await user.save();
 
@@ -185,7 +199,7 @@ router.post("/signup", async (req, res) => {
           ? emailResult.sent
             ? "We sent a 30-minute verification email. After you verify it, you can log in with your password too."
             : "Your account already exists and email sending is not configured yet, so use the dev verification link."
-          : existingUser && !existingUser.isVerified
+          : existingUser && existingUser.isVerified === false
           ? emailResult.sent
             ? "We sent a fresh 30-minute verification email to finish your Veturo signup."
             : "Your account is still waiting for verification. Email sending is not configured yet, so use the dev verification link."
@@ -209,15 +223,44 @@ router.post("/signup", async (req, res) => {
 
 router.get("/verify-email/:token", async (req, res) => {
   try {
+    const token = `${req.params.token || ""}`.trim();
+
+    if (!token || token.length < 32) {
+      return res.status(400).json({
+        message: "This verification link is invalid or expired.",
+      });
+    }
+
     const tokenHash = hashVerificationToken(req.params.token);
 
     const user = await User.findOne({
       emailVerificationToken: tokenHash,
-      emailVerificationExpires: { $gt: new Date() },
     });
 
     if (!user) {
-      return res.status(400).send("This verification link is invalid or expired.");
+      return res.status(400).json({
+        message: "This verification link is invalid or expired.",
+      });
+    }
+
+    if (user.isVerified) {
+      user.emailVerificationToken = null;
+      user.emailVerificationExpires = null;
+      await user.save();
+
+      return res.status(200).json({
+        message: "Your email is already verified. You can log in.",
+      });
+    }
+
+    if (!user.emailVerificationExpires || user.emailVerificationExpires <= new Date()) {
+      user.emailVerificationToken = null;
+      user.emailVerificationExpires = null;
+      await user.save();
+
+      return res.status(400).json({
+        message: "This verification link expired. Request a fresh verification email.",
+      });
     }
 
     user.isVerified = true;
@@ -232,6 +275,67 @@ router.get("/verify-email/:token", async (req, res) => {
   } catch (error) {
     console.error("verify-email error:", error);
     return res.status(500).json({ message: "Failed to verify email." });
+  }
+});
+
+router.post("/resend-verification", async (req, res) => {
+  try {
+    const email = `${req.body.email || ""}`.trim().toLowerCase();
+
+    if (!email || !isValidEmail(email)) {
+      return res.status(400).json({ message: "Please enter a valid email" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(200).json({
+        message:
+          "If that account needs verification, we sent a fresh verification email.",
+      });
+    }
+
+    if (user.isVerified !== false) {
+      return res.status(200).json({
+        message: "This account is already verified. You can log in.",
+      });
+    }
+
+    if (user.provider === "google" && !user.password) {
+      return res.status(200).json({
+        message: "This account uses Google sign-in. Continue with Google.",
+      });
+    }
+
+    const { rawToken, tokenHash, expiresAt } = createVerificationToken();
+
+    user.emailVerificationToken = tokenHash;
+    user.emailVerificationExpires = expiresAt;
+    await user.save();
+
+    const verifyUrl = getEmailVerificationUrl(rawToken);
+    const emailResult = await sendVerificationEmail({
+      to: user.email,
+      name: user.name,
+      verifyUrl,
+    });
+
+    const response = {
+      message: emailResult.sent
+        ? "We sent a fresh verification link. Check your email before logging in."
+        : "Email sending is not configured yet, so use the dev verification link.",
+    };
+
+    if (!emailResult.sent) {
+      response.verificationUrl = verifyUrl;
+    }
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error("resend-verification error:", error);
+    return res.status(500).json({
+      message: "Failed to resend verification email.",
+    });
   }
 });
 
@@ -261,20 +365,10 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const hasPendingEmailVerification =
-      Boolean(user.emailVerificationToken) &&
-      Boolean(user.emailVerificationExpires) &&
-      user.emailVerificationExpires > new Date();
-
-    if (hasPendingEmailVerification) {
+    if (user.provider !== "google" && user.isVerified === false) {
       return res.status(403).json({
-        message: "Please verify your email before logging in",
-      });
-    }
-
-    if (!user.isVerified) {
-      return res.status(403).json({
-        message: "Please verify your email before logging in",
+        message: "Please verify your email before logging in.",
+        code: "EMAIL_NOT_VERIFIED",
       });
     }
 

@@ -12,6 +12,9 @@ export default function SignupModal({ isOpen, onClose, onLoginClick, language = 
       validEmail: "Please enter a valid email.",
       minPassword: "Password must be at least 6 characters.",
       accountCreated: "Account created. Please verify your email before logging in.",
+      verifySent: "We sent you a verification link. Check your email before logging in.",
+      resend: "Resend verification email",
+      resending: "Sending...",
       signupFailed: "Signup failed. Please try again.",
       googleFailed: "Google signup failed. Try email signup.",
       title: "Welcome to Veturo",
@@ -35,6 +38,9 @@ export default function SignupModal({ isOpen, onClose, onLoginClick, language = 
       validEmail: "Ju lutem shkruani nje email te sakte.",
       minPassword: "Fjalekalimi duhet te kete te pakten 6 karaktere.",
       accountCreated: "Llogaria u krijua. Ju lutem verifikoni emailin para hyrjes.",
+      verifySent: "Ju derguam nje link verifikimi. Kontrolloni emailin para hyrjes.",
+      resend: "Dergo perseri emailin e verifikimit",
+      resending: "Duke derguar...",
       signupFailed: "Regjistrimi deshtoi. Ju lutem provoni perseri.",
       googleFailed: "Regjistrimi me Google deshtoi. Provoni me email.",
       title: "Mire se vini ne Veturo",
@@ -60,6 +66,8 @@ export default function SignupModal({ isOpen, onClose, onLoginClick, language = 
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState("info");
   const [loading, setLoading] = useState(false);
+  const [canResend, setCanResend] = useState(false);
+  const [resending, setResending] = useState(false);
 
   if (!isOpen) return null;
 
@@ -109,16 +117,46 @@ export default function SignupModal({ isOpen, onClose, onLoginClick, language = 
         : "";
 
       setNotice(
-        `${res.data.message || copy.accountCreated}${devLink}`,
+        `${res.data.message || copy.verifySent || copy.accountCreated}${devLink}`,
         "success"
       );
+      setCanResend(true);
+    } catch (error) {
+      setNotice(
+        error.response?.data?.message || copy.signupFailed,
+        "error"
+      );
+      setCanResend(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    const safeEmail = email.trim();
+
+    if (!safeEmail || !safeEmail.includes("@")) {
+      setNotice(copy.validEmail, "error");
+      return;
+    }
+
+    try {
+      setResending(true);
+      const res = await axios.post(`${API_URL}/auth/resend-verification`, {
+        email: safeEmail,
+      });
+      const devLink = res.data.verificationUrl
+        ? ` Dev link: ${res.data.verificationUrl}`
+        : "";
+
+      setNotice(`${res.data.message || copy.verifySent}${devLink}`, "success");
     } catch (error) {
       setNotice(
         error.response?.data?.message || copy.signupFailed,
         "error"
       );
     } finally {
-      setLoading(false);
+      setResending(false);
     }
   };
 
@@ -216,6 +254,16 @@ export default function SignupModal({ isOpen, onClose, onLoginClick, language = 
           <button className="signupEmailBtn" type="submit" disabled={loading}>
             {loading ? copy.creating : copy.signupEmail}
           </button>
+          {canResend && (
+            <button
+              className="signupResendBtn"
+              type="button"
+              onClick={handleResendVerification}
+              disabled={resending}
+            >
+              {resending ? copy.resending : copy.resend}
+            </button>
+          )}
         </form>
 
         <div className="signupDivider">
