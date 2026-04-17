@@ -594,8 +594,8 @@ export default function Main({
         >
           <div className="hero__text">
             <p className="hero__eyebrow">{copy.eyebrow}</p>
-            <h1 className="hero__title">{copy.title}</h1>
-            <p className="hero__lead">{copy.seoLead}</p>
+            <h1 className="hero__title seoVisuallyHidden">{copy.title}</h1>
+            <p className="hero__lead seoVisuallyHidden">{copy.seoLead}</p>
           </div>
 
           <div
@@ -1116,7 +1116,10 @@ export default function Main({
         </div>
       </section>
 
-      <section className="heroSeo" aria-labelledby="veturo-rental-coverage">
+      <section
+        className="heroSeo seoVisuallyHidden"
+        aria-labelledby="veturo-rental-coverage"
+      >
         <h2 id="veturo-rental-coverage">{copy.seoTitle}</h2>
         <p>{copy.seoText}</p>
       </section>
