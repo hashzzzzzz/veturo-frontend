@@ -428,22 +428,6 @@ function App() {
         }}
       />
 
-      <div className="appQuickAccess">
-        {!isAdmin ? (
-          <Link to="/admin-login" className="appQuickAccess__btn">
-            Admin Access
-          </Link>
-        ) : (
-          <Link to="/admin-panel" className="appQuickAccess__btn">
-            Admin Panel
-          </Link>
-        )}
-
-        <Link to="/hosts" className="appQuickAccess__btn secondary">
-          Host Panel
-        </Link>
-      </div>
-
       {showWelcomePopup && user && (
         <div className="welcomePopup">
           <div className="welcomePopup__content">

@@ -692,7 +692,7 @@ export default function FeaturedSections({
             <div className="featured__header">
               <div>
                 <h2>{section.title}</h2>
-                <p className="featured__description">
+                <p className="featured__description seoVisuallyHidden">
                   {copy.sectionDescription(section.title)}
                 </p>
               </div>
