@@ -22,6 +22,7 @@ import AdminPanel from "./components/AdminPanel";
 import AdminLogin from "./components/AdminLogin";
 import ResetPassword from "./components/ResetPassword";
 import VerifyEmail from "./components/VerifyEmail";
+import { trackPageView } from "./utils/analytics";
 import "./appAccess.css";
 
 const LANGUAGE_STORAGE_KEY = "veturoLanguage";
@@ -108,6 +109,37 @@ function setCanonical(url) {
   link.setAttribute("href", url);
 }
 
+function setJsonLd(id, data) {
+  let element = document.head.querySelector(`script[data-jsonld="${id}"]`);
+
+  if (!element) {
+    element = document.createElement("script");
+    element.type = "application/ld+json";
+    element.setAttribute("data-jsonld", id);
+    document.head.appendChild(element);
+  }
+
+  element.textContent = JSON.stringify(data);
+}
+
+function removeJsonLd(id) {
+  const element = document.head.querySelector(`script[data-jsonld="${id}"]`);
+
+  if (element) {
+    element.remove();
+  }
+}
+
+function AnalyticsRouteTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackPageView(`${location.pathname}${location.search}`);
+  }, [location.pathname, location.search]);
+
+  return null;
+}
+
 function SeoMeta({ language }) {
   const location = useLocation();
 
@@ -120,13 +152,23 @@ function SeoMeta({ language }) {
       "kerre me qera",
       "kerre me qera kosove",
       "kerre me qera prishtine",
+      "kerre me qera tirane",
+      "kerre me qera shkup",
       "rent a car kosova",
       "rent a car prishtina",
       "rent a car albania",
       "rent a car tirana",
       "rent a car skopje",
+      "rent a car north macedonia",
+      "rent a car pristina airport",
+      "rent a car tirana airport",
+      "rent a car skopje airport",
       "airport car rental kosovo",
       "airport car rental albania",
+      "airport car rental north macedonia",
+      "PRN airport car rental",
+      "TIA airport car rental",
+      "SKP airport car rental",
       "cheap rent a car kosova",
       "veturo cars",
       "car rental balkans",
@@ -134,14 +176,14 @@ function SeoMeta({ language }) {
 
     const routeMeta = {
       "/": {
-        title: "Veturo Cars | Premium Rent a Car in Kosovo, Albania and the Balkans",
+        title: "Veturo Cars | Rent a Car Kosovo, Albania & North Macedonia",
         description:
-          "Veturo Cars makes premium car rental simple across Kosovo, Prishtina, Albania, Tirana, Skopje and key Balkan airports with direct city and airport search.",
+          "Search premium rent a car in Pristina, Tirana, Skopje, Kosovo, Albania and North Macedonia, including PRN, TIA and SKP airport car rental.",
       },
       "/become-host": {
-        title: "Become a Host | Veturo Cars",
+        title: "Become a Car Rental Host | Veturo Cars",
         description:
-          "Join Veturo Cars as a host and list premium vehicles for travelers searching airport and city car rental across Kosovo, Albania and the Balkans.",
+          "List your rental car on Veturo and reach travelers searching car rental in Kosovo, Albania and North Macedonia cities and airports.",
       },
       "/hosts": {
         title: "Host Login | Veturo Cars",
@@ -151,7 +193,7 @@ function SeoMeta({ language }) {
     };
 
     const fallbackMeta = {
-      title: `${siteName} | Premium Balkan Car Rental`,
+      title: `${siteName} | Balkan Car Rental`,
       description:
         "Discover premium airport and city car rental with Veturo Cars across Kosovo, Albania, North Macedonia and the wider Balkans.",
     };
@@ -160,7 +202,7 @@ function SeoMeta({ language }) {
       ? {
           title: `${siteName} | Car Details`,
           description:
-            "View Veturo Cars availability, pricing and booking details for premium rental vehicles in top Balkan cities and airports.",
+            "View availability, prices, photos and host contact details for a Veturo rental car in Kosovo, Albania or North Macedonia.",
         }
       : routeMeta[pathname] || fallbackMeta;
 
@@ -174,11 +216,73 @@ function SeoMeta({ language }) {
     setMetaByProperty("og:title", pageMeta.title);
     setMetaByProperty("og:description", pageMeta.description);
     setMetaByProperty("og:url", canonicalUrl);
+    setMetaByProperty("og:image", `${origin}/favicon.svg`);
     setMetaByName("twitter:card", "summary_large_image");
     setMetaByName("twitter:title", pageMeta.title);
     setMetaByName("twitter:description", pageMeta.description);
     setCanonical(canonicalUrl);
-  }, [language, location.pathname]);
+
+    setJsonLd("veturo-organization", {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Veturo Cars",
+      url: origin,
+      logo: `${origin}/favicon.svg`,
+      sameAs: [
+        "https://veturocars.com",
+      ],
+      areaServed: [
+        "Kosovo",
+        "Albania",
+        "North Macedonia",
+      ],
+    });
+
+    setJsonLd("veturo-website", {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Veturo Cars",
+      url: origin,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${origin}/?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    });
+
+    if (pathname === "/") {
+      setJsonLd("veturo-service", {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: "Veturo rent a car",
+        serviceType: "Car rental",
+        provider: {
+          "@type": "Organization",
+          name: "Veturo Cars",
+          url: origin,
+        },
+        areaServed: [
+          "Pristina",
+          "Prizren",
+          "Peja",
+          "Gjakova",
+          "Tirana",
+          "Durres",
+          "Vlora",
+          "Skopje",
+          "Tetovo",
+          "Ohrid",
+        ],
+      });
+    } else {
+      removeJsonLd("veturo-service");
+    }
+
+    if (!pathname.startsWith("/cars/")) {
+      removeJsonLd("veturo-car");
+      removeJsonLd("veturo-car-breadcrumb");
+    }
+  }, [language, location.pathname, location.search]);
 
   return null;
 }
@@ -303,6 +407,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <AnalyticsRouteTracker />
       <SeoMeta language={selectedLanguage} />
 
       <Navbar

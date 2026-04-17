@@ -4,6 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import "./signupModal.css";
 
 import API_URL from "../config/api";
+import { trackEvent } from "../utils/analytics";
 
 export default function SignupModal({ isOpen, onClose, onLoginClick, language = "en" }) {
   const copy = {
@@ -120,6 +121,9 @@ export default function SignupModal({ isOpen, onClose, onLoginClick, language = 
         `${res.data.message || copy.verifySent || copy.accountCreated}${devLink}`,
         "success"
       );
+      trackEvent("signup", {
+        method: "email",
+      });
       setCanResend(true);
     } catch (error) {
       setNotice(
@@ -166,6 +170,9 @@ export default function SignupModal({ isOpen, onClose, onLoginClick, language = 
         credential: credentialResponse.credential,
       });
 
+      trackEvent("signup", {
+        method: "google",
+      });
       saveSession(res.data);
     } catch (error) {
       setNotice(

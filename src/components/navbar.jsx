@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UserCircleIcon, HeartIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import "./navbar.css";
 import logo from "../assets/mepike.jpg";
+import { trackEvent } from "../utils/analytics";
 
 function Navbar({
   user,
@@ -20,6 +21,9 @@ function Navbar({
   const navigate = useNavigate();
 
   const handleBecomeHost = () => {
+    trackEvent("become_host_click", {
+      source: "navbar",
+    });
     setMenuOpen(false);
     navigate("/become-host");
   };

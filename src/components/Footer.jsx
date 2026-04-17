@@ -46,6 +46,8 @@ export default function Footer({ language = "en" }) {
         cities: "CITIES",
         airports: "AIRPORTS",
       },
+      intro:
+        "Veturo helps travelers compare rent a car options in Kosovo, Albania and North Macedonia, from city pickup to PRN, TIA and SKP airport car rental.",
       contact: [
         { type: "social", label: "Facebook", icon: <FacebookIcon /> },
         { type: "social", label: "Instagram", icon: <InstagramIcon /> },
@@ -64,17 +66,27 @@ export default function Footer({ language = "en" }) {
         "Ferizaj",
         "Prizren",
         "Peja",
+        "Gjakova",
         "Gjilan",
         "Mitrovica",
+        "Podujeva",
         "Tirana",
         "Durres",
         "Vlore",
         "Shkoder",
+        "Elbasan",
+        "Saranda",
+        "Fier",
+        "Korca",
+        "Kukes",
         "Skopje",
         "Tetovo",
         "Kumanovo",
+        "Gostivar",
+        "Bitola",
         "Ohrid",
         "Struga",
+        "Prilep",
       ],
       airports: [
         "Pristina International Airport (PRN)",
@@ -91,6 +103,8 @@ export default function Footer({ language = "en" }) {
       policies: "Policies",
       careers: "Careers",
       locations: "Locations",
+      localKeywords:
+        "Kerre me qera ne Prishtine, Tirane dhe Shkup. Rent a car Pristina, Tirana, Skopje, PRN, TIA and SKP.",
       explore: "Explore",
       whyVeturo: "Why choose Veturo",
       airportRentals: "Airport rentals",
@@ -112,6 +126,8 @@ export default function Footer({ language = "en" }) {
         cities: "QYTETET",
         airports: "AEROPORTET",
       },
+      intro:
+        "Veturo ju ndihmon te gjeni kerre me qera ne Kosove, Shqiperi dhe Maqedoni te Veriut, nga qytetet deri te aeroportet PRN, TIA dhe SKP.",
       contact: [
         { type: "social", label: "Facebook", icon: <FacebookIcon /> },
         { type: "social", label: "Instagram", icon: <InstagramIcon /> },
@@ -130,17 +146,27 @@ export default function Footer({ language = "en" }) {
         "Ferizaj",
         "Prizren",
         "Peje",
+        "Gjakove",
         "Gjilan",
         "Mitrovice",
+        "Podujeve",
         "Tirane",
         "Durres",
         "Vlore",
         "Shkoder",
+        "Elbasan",
+        "Sarande",
+        "Fier",
+        "Korce",
+        "Kukes",
         "Shkup",
         "Tetove",
         "Kumanove",
+        "Gostivar",
+        "Manastir",
         "Ohër",
         "Struge",
+        "Prilep",
       ],
       airports: [
         "Aeroporti Nderkombetar i Prishtines (PRN)",
@@ -157,6 +183,8 @@ export default function Footer({ language = "en" }) {
       policies: "Politikat",
       careers: "Karriera",
       locations: "Lokacionet",
+      localKeywords:
+        "Kerre me qera ne Prishtine, Tirane dhe Shkup. Rent a car Pristina, Tirana, Skopje, PRN, TIA dhe SKP.",
       explore: "Eksploro",
       whyVeturo: "Pse ta zgjedhesh Veturo",
       airportRentals: "Qira ne aeroporte",
@@ -202,6 +230,8 @@ export default function Footer({ language = "en" }) {
   return (
     <footer className="footer">
       <div className="footer__container">
+        <p className="footer__intro">{copy.intro}</p>
+
         <div className="footer__tabs">
           {tabs.map((tab) => (
             <button
@@ -255,7 +285,8 @@ export default function Footer({ language = "en" }) {
             <span>{copy.states[1]}</span>
             <span>{copy.states[2]}</span>
             <span>{copy.cities[0]}</span>
-            <span>{copy.cities[6]}</span>
+            <span>{copy.cities[8]}</span>
+            <span>{copy.localKeywords}</span>
           </div>
 
           <div className="footer__col">

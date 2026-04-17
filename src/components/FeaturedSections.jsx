@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import API_URL from "../config/api";
+import { trackEvent } from "../utils/analytics";
 const DETAIL_CACHE_PREFIX = "veturo_car_full_";
 const PREFETCH_LIMIT = 6;
 
@@ -55,17 +56,18 @@ function getCanonicalAirportSectionTitle(airport = "") {
 
   const airportAliases = {
     PRN: "Pristina Airport Rental",
-    TIA: "Tirana Airport Rental",
-    SKP: "Skopje Airport Rental",
+    TIA: "Tirana Airport Car Rental",
+    SKP: "Skopje Airport Car Rental",
+    OHD: "Ohrid Airport Car Rental",
   };
 
-  return airportAliases[value] || `${value} Airport Rental`;
+  return airportAliases[value] || `${value} Airport Car Rental`;
 }
 
 function getCitySectionMeta(city = "") {
   const canonicalCity = getCanonicalCityName(city);
   return {
-    title: `${canonicalCity} City Rental`,
+    title: `Rent a Car in ${canonicalCity}`,
     key: `city-${slugify(canonicalCity)}`,
   };
 }
@@ -325,6 +327,8 @@ export default function FeaturedSections({
       trips: "trips",
       perDay: "/ day",
       view: "View",
+      sectionDescription: (title) =>
+        `${title} options for airport, city and daily car rental with local Veturo hosts.`,
     },
     al: {
       otherRentals: "Qira te tjera",
@@ -336,6 +340,8 @@ export default function FeaturedSections({
       trips: "udhetime",
       perDay: "/ dite",
       view: "Shiko",
+      sectionDescription: (title) =>
+        `${title} per qira ditore, qira ne qytet dhe qira ne aeroport me hoste lokale te Veturo.`,
     },
   }[language] || {
     otherRentals: "Other Rentals",
@@ -594,6 +600,15 @@ export default function FeaturedSections({
     const carId = car?._id || car?.id;
     let showIntroLoader = false;
 
+    trackEvent("view_car_details", {
+      car_id: carId,
+      car_title: car?.title,
+      city: car?.city,
+      airport: car?.airport,
+      value: car?.dailyPrice,
+      currency: "USD",
+    });
+
     if (carId) {
       try {
         const introSeenKey = getIntroSeenKey(carId);
@@ -675,7 +690,12 @@ export default function FeaturedSections({
             }}
           >
             <div className="featured__header">
-              <h2>{section.title}</h2>
+              <div>
+                <h2>{section.title}</h2>
+                <p className="featured__description">
+                  {copy.sectionDescription(section.title)}
+                </p>
+              </div>
 
               {showWatchMoreButton && (
                 <button
@@ -730,6 +750,12 @@ export default function FeaturedSections({
                               className={`card__heart ${isFavorite?.(car._id) ? "active" : ""}`}
                               onClick={(e) => {
                                 e.stopPropagation();
+                                trackEvent("save_favorite", {
+                                  car_id: car._id,
+                                  car_title: car.title,
+                                  city: car.city,
+                                  airport: car.airport,
+                                });
                                 toggleFavorite?.({
                                   id: car._id,
                                   _id: car._id,
@@ -832,6 +858,12 @@ export default function FeaturedSections({
                           className={`card__heart ${isFavorite?.(car._id) ? "active" : ""}`}
                           onClick={(e) => {
                             e.stopPropagation();
+                            trackEvent("save_favorite", {
+                              car_id: car._id,
+                              car_title: car.title,
+                              city: car.city,
+                              airport: car.airport,
+                            });
                             toggleFavorite?.({
                               id: car._id,
                               _id: car._id,

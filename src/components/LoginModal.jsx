@@ -4,6 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import "./loginModal.css";
 
 import API_URL from "../config/api";
+import { trackEvent } from "../utils/analytics";
 
 export default function LoginModal({ isOpen, onClose, onSignupClick, language = "en" }) {
   const copy = {
@@ -136,6 +137,9 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
         password,
       });
 
+      trackEvent("login", {
+        method: "email",
+      });
       saveSession(res.data);
     } catch (error) {
       const backendMessage = error.response?.data?.message || "";
@@ -163,6 +167,9 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, language = 
         credential: credentialResponse.credential,
       });
 
+      trackEvent("login", {
+        method: "google",
+      });
       saveSession(res.data);
     } catch (error) {
       setFormError(

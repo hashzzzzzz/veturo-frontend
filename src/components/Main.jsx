@@ -12,6 +12,7 @@ import "./main.css";
 import heroBg from "../assets/cargpt2.png";
 
 import API_URL from "../config/api";
+import { trackEvent } from "../utils/analytics";
 
 function slugify(value = "") {
   return value
@@ -60,6 +61,12 @@ export default function Main({
   const copy = {
     en: {
       eyebrow: "DRIVE YOUR WAY",
+      title: "Rent a car in Kosovo, Albania and North Macedonia",
+      seoLead:
+        "Search Veturo for airport and city car rental in Pristina, Tirana, Skopje and the wider Balkan region.",
+      seoTitle: "Car rental across Pristina, Tirana, Skopje and major airports",
+      seoText:
+        "Veturo connects travelers with premium rent a car options for Kosovo, Albania and North Macedonia, including PRN Pristina Airport, TIA Tirana Airport and SKP Skopje Airport. Find daily, airport and monthly car rental in the cities you actually visit.",
       where: "Where",
       wherePlaceholder: "City, airport, address or hotel",
       chooseLocation: "Choose location",
@@ -83,6 +90,12 @@ export default function Main({
     },
     al: {
       eyebrow: "NGASJE SIPAS STILIT TEND",
+      title: "Kerre me qera ne Kosove, Shqiperi dhe Maqedoni te Veriut",
+      seoLead:
+        "Kerko vetura me qera ne Prishtine, Tirane, Shkup dhe aeroportet kryesore te rajonit.",
+      seoTitle: "Qira veturash ne Prishtine, Tirane, Shkup dhe aeroporte",
+      seoText:
+        "Veturo ju lidh me kerre me qera per Kosove, Shqiperi dhe Maqedoni te Veriut, duke perfshire Aeroportin e Prishtines PRN, Aeroportin e Tiranes TIA dhe Aeroportin e Shkupit SKP. Gjeni qira ditore, qira ne aeroport dhe qira mujore per udhetimin tuaj.",
       where: "Ku",
       wherePlaceholder: "Qytet, aeroport, adrese ose hotel",
       chooseLocation: "Zgjidh lokacionin",
@@ -387,7 +400,17 @@ export default function Main({
     if (!item) return;
 
     setSearchError("");
-    onSearchSubmit?.(createPayload(item, nextFromDate, nextUntilDate));
+    const payload = createPayload(item, nextFromDate, nextUntilDate);
+
+    trackEvent("search_cars", {
+      search_type: payload.type,
+      search_location: payload.where,
+      city: payload.city || undefined,
+      airport: payload.airport || undefined,
+      has_dates: Boolean(payload.fromDate && payload.untilDate),
+    });
+
+    onSearchSubmit?.(payload);
   }
 
   function resetSearch() {
@@ -571,6 +594,8 @@ export default function Main({
         >
           <div className="hero__text">
             <p className="hero__eyebrow">{copy.eyebrow}</p>
+            <h1 className="hero__title">{copy.title}</h1>
+            <p className="hero__lead">{copy.seoLead}</p>
           </div>
 
           <div
@@ -1089,6 +1114,11 @@ export default function Main({
             </p>
           ) : null}
         </div>
+      </section>
+
+      <section className="heroSeo" aria-labelledby="veturo-rental-coverage">
+        <h2 id="veturo-rental-coverage">{copy.seoTitle}</h2>
+        <p>{copy.seoText}</p>
       </section>
     </main>
   );

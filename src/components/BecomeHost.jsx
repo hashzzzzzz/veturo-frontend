@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./becomeHost.css";
+import { trackEvent } from "../utils/analytics";
 
 function BecomeHost({ language = "en" }) {
   const [fullName, setFullName] = useState("");
@@ -115,7 +116,13 @@ function BecomeHost({ language = "en" }) {
             onClick={(e) => {
               if (!fullName.trim() || !phone.trim()) {
                 e.preventDefault();
+                return;
               }
+
+              trackEvent("become_host_click", {
+                source: "become_host_page",
+                host_type: hostType,
+              });
             }}
           >
             {copy.contact}

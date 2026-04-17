@@ -3,6 +3,7 @@ import { useLocation, useParams } from "react-router-dom";
 import GalleryModal from "../components/GalleryModal";
 import CarDetailsLoader from "./CarDetailsLoader";
 import API_URL from "../config/api";
+import { trackEvent } from "../utils/analytics";
 import "./carDetails.css";
 
 const MONTH_NAMES = {
@@ -238,6 +239,66 @@ function buildViberLink(viberUri = "", message = "") {
   return `viber://pa?chatURI=${encodeURIComponent(cleanUri)}${
     encodedMessage ? `&text=${encodedMessage}` : ""
   }`;
+}
+
+function setMetaByName(name, content) {
+  if (typeof document === "undefined" || !content) return;
+
+  let element = document.head.querySelector(`meta[name="${name}"]`);
+
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute("name", name);
+    document.head.appendChild(element);
+  }
+
+  element.setAttribute("content", content);
+}
+
+function setMetaByProperty(property, content) {
+  if (typeof document === "undefined" || !content) return;
+
+  let element = document.head.querySelector(`meta[property="${property}"]`);
+
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute("property", property);
+    document.head.appendChild(element);
+  }
+
+  element.setAttribute("content", content);
+}
+
+function setJsonLd(id, data) {
+  if (typeof document === "undefined") return;
+
+  let element = document.head.querySelector(`script[data-jsonld="${id}"]`);
+
+  if (!element) {
+    element = document.createElement("script");
+    element.type = "application/ld+json";
+    element.setAttribute("data-jsonld", id);
+    document.head.appendChild(element);
+  }
+
+  element.textContent = JSON.stringify(data);
+}
+
+function getSeoLocation(car) {
+  if (car?.city) return car.city;
+  if (car?.airport) return `${String(car.airport).toUpperCase()} Airport`;
+  if (car?.location) return car.location;
+  return "Balkan";
+}
+
+function getCanonicalCarImage(car) {
+  const image = Array.isArray(car?.images) ? car.images[0] : "";
+
+  if (!image || image.startsWith("data:image/")) {
+    return "https://veturocars.com/favicon.svg";
+  }
+
+  return image;
 }
 
 function mergeCarData(baseCar, freshCar) {
@@ -541,6 +602,72 @@ export default function CarDetails({ favorites = [], language = "en" }) {
     });
   }, [car, selectedImage]);
 
+  useEffect(() => {
+    if (!car) return;
+
+    const seoLocation = getSeoLocation(car);
+    const title = `${car.title} Rent a Car in ${seoLocation} | Veturo Cars`;
+    const description = `Book ${car.title} from $${car.dailyPrice || ""}/day with Veturo. View availability, photos and host contact for rent a car in ${seoLocation}, Kosovo, Albania or North Macedonia.`;
+    const canonicalUrl = `https://veturocars.com/cars/${id}`;
+    const imageUrl = getCanonicalCarImage(car);
+
+    document.title = title;
+    setMetaByName("description", description);
+    setMetaByProperty("og:type", "product");
+    setMetaByProperty("og:title", title);
+    setMetaByProperty("og:description", description);
+    setMetaByProperty("og:url", canonicalUrl);
+    setMetaByProperty("og:image", imageUrl);
+    setMetaByName("twitter:title", title);
+    setMetaByName("twitter:description", description);
+
+    setJsonLd("veturo-car", {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: car.title,
+      image: imageUrl,
+      description: car.description || description,
+      brand: car.make || car.type || "Veturo",
+      category: "Car rental",
+      offers: {
+        "@type": "Offer",
+        price: car.dailyPrice,
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: canonicalUrl,
+      },
+      areaServed: seoLocation,
+    });
+
+    setJsonLd("veturo-car-breadcrumb", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Veturo Cars",
+          item: "https://veturocars.com/",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: car.title,
+          item: canonicalUrl,
+        },
+      ],
+    });
+
+    trackEvent("view_car_details", {
+      car_id: id,
+      car_title: car.title,
+      city: car.city,
+      airport: car.airport,
+      value: car.dailyPrice,
+      currency: "USD",
+    });
+  }, [car, id]);
+
   if (!car) {
     if (showIntroLoader) {
       return (
@@ -764,7 +891,15 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                           <button
                             type="button"
                             className="carDetails__copyPhoneBtn"
-                            onClick={() => navigator.clipboard.writeText(car.hostPhone)}
+                            onClick={() => {
+                              trackEvent("click_call_host", {
+                                car_id: id,
+                                car_title: car.title,
+                                city: car.city,
+                                airport: car.airport,
+                              });
+                              navigator.clipboard.writeText(car.hostPhone);
+                            }}
                             aria-label={copy.copyPhone}
                             title={copy.copyPhone}
                           >
@@ -783,6 +918,15 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                             target="_blank"
                             rel="noreferrer"
                             className="carDetails__whatsappBadge"
+                            onClick={() =>
+                              trackEvent("click_whatsapp", {
+                                car_id: id,
+                                car_title: car.title,
+                                city: car.city,
+                                airport: car.airport,
+                                source: "host_card",
+                              })
+                            }
                           >
                             <svg
                               viewBox="0 0 24 24"
@@ -973,6 +1117,15 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                           target="_blank"
                           rel="noreferrer"
                           className="carDetails__continue carDetails__continue--whatsapp"
+                          onClick={() =>
+                            trackEvent("click_whatsapp", {
+                              car_id: id,
+                              car_title: car.title,
+                              city: car.city,
+                              airport: car.airport,
+                              source: "booking_card",
+                            })
+                          }
                           style={{
                             textDecoration: "none",
                             display: "inline-flex",
