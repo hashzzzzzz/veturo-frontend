@@ -6,7 +6,6 @@ import { trackEvent } from "../utils/analytics";
 function BecomeHost({ language = "en" }) {
   const [fullName, setFullName] = useState("");
   const [hostType, setHostType] = useState("person");
-  const [phone, setPhone] = useState("");
 
   const copy = {
     en: {
@@ -19,7 +18,6 @@ function BecomeHost({ language = "en" }) {
       hostType: "Business or person?",
       person: "Person",
       business: "Business",
-      phone: "Phone number",
       contact: "Contact on WhatsApp",
       approved: "Already approved? Go to Host Login",
       note: "Manual verification on WhatsApp.",
@@ -38,7 +36,6 @@ function BecomeHost({ language = "en" }) {
       hostType: "Biznes apo person?",
       person: "Person",
       business: "Biznes",
-      phone: "Numri i telefonit",
       contact: "Kontakto ne WhatsApp",
       approved: "Je aprovuar? Shko te Host Login",
       note: "Verifikimi manual ne WhatsApp.",
@@ -49,11 +46,14 @@ function BecomeHost({ language = "en" }) {
     },
   }[language];
 
-  const whatsappNumber = "38344111222";
+  const whatsappNumber = "38345820096";
 
   const buildWhatsappLink = () => {
     const typeText = copy.typeValue[hostType];
-    const text = `Pershendetje Veturo, dua te behem host.%0A%0AEmri dhe mbiemri: ${fullName}%0ALloji: ${typeText}%0ANumri kontaktues: ${phone}`;
+    const text = encodeURIComponent(
+      `Pershendetje Veturo, dua te behem host.\n\nEmri dhe mbiemri: ${fullName}\nLloji: ${typeText}`
+    );
+
     return `https://wa.me/${whatsappNumber}?text=${text}`;
   };
 
@@ -96,25 +96,13 @@ function BecomeHost({ language = "en" }) {
             </div>
           </div>
 
-          <div className="becomeHostField">
-            <label>{copy.phone}</label>
-            <input
-              type="text"
-              placeholder="+383 44 000 000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
-
           <a
             href={buildWhatsappLink()}
             target="_blank"
             rel="noreferrer"
-            className={`becomeHostWhatsapp ${
-              !fullName.trim() || !phone.trim() ? "disabled" : ""
-            }`}
+            className={`becomeHostWhatsapp ${!fullName.trim() ? "disabled" : ""}`}
             onClick={(e) => {
-              if (!fullName.trim() || !phone.trim()) {
+              if (!fullName.trim()) {
                 e.preventDefault();
                 return;
               }
