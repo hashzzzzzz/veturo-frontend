@@ -4,40 +4,49 @@ import User from "../models/User.js";
 
 dotenv.config();
 
+const SUPERADMIN_EMAIL = "veturocar@gmail.com";
+
 const createSuperAdmin = async () => {
   try {
+    if (!process.env.MONGO_URL) {
+      throw new Error("MONGO_URL is required");
+    }
+
     await mongoose.connect(process.env.MONGO_URL);
     console.log("MongoDB connected");
 
-    const email = "admin@veturo.com";
+    const user = await User.findOne({ email: SUPERADMIN_EMAIL });
 
-    const existing = await User.findOne({ email });
+    const superadmin =
+      user ||
+      new User({
+        name: "Veturo Admin",
+        email: SUPERADMIN_EMAIL,
+        password: null,
+        avatar: "",
+        provider: "google",
+      });
 
-    if (existing) {
-      console.log("Superadmin already exists");
-      process.exit(0);
-    }
+    superadmin.role = "superadmin";
+    superadmin.isVerified = true;
+    superadmin.verifiedAt = superadmin.verifiedAt || new Date();
+    superadmin.emailVerificationToken = null;
+    superadmin.emailVerificationExpires = null;
 
-    const user = await User.create({
-      name: "Super Admin",
-      email: "admin@veturo.com",
-      password: "123456",
-      avatar: "",
-      provider: "local",
-      role: "superadmin",
-      isVerified: true,
-    });
+    await superadmin.save();
 
-    console.log("SUPERADMIN CREATED:");
+    console.log("SUPERADMIN UPDATED:");
     console.log({
-      email: user.email,
-      password: "123456",
-      role: user.role,
+      email: superadmin.email,
+      role: superadmin.role,
+      provider: superadmin.provider,
+      isVerified: superadmin.isVerified,
+      created: !user,
     });
 
     process.exit(0);
   } catch (error) {
-    console.error("Error creating superadmin:", error.message);
+    console.error("Error updating superadmin:", error.message);
     process.exit(1);
   }
 };

@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed": "node data/seedCars.js"
+    "seed": "node data/seedCars.js",
+    "make-superadmin": "node scripts/createSuperAdmin.js"
   },
   "keywords": [],
   "author": "",
