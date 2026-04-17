@@ -124,7 +124,15 @@ router.post("/reset-password/:token", async (req, res) => {
     await user.save();
 
     return res.status(200).json({
-      message: "Password updated. You can log in now.",
+      message: "Password updated successfully.",
+      token: signToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error("reset-password error:", error);

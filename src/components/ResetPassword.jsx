@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./resetPassword.css";
 
 import API_URL from "../config/api";
@@ -47,11 +47,32 @@ export default function ResetPassword() {
         throw new Error(data.message || "Failed to reset password.");
       }
 
+      if (data.token && data.user) {
+        if (["host", "admin", "superadmin"].includes(data.user.role)) {
+          localStorage.setItem("hostToken", data.token);
+          localStorage.setItem("hostUser", JSON.stringify(data.user));
+        }
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("showWelcomePopup", "true");
+      }
+
       setTone("success");
-      setMessage(data.message || "Password updated. You can log in now.");
+      setMessage(data.message || "Password updated successfully.");
 
       setTimeout(() => {
-        navigate("/");
+        if (data.user?.role === "host") {
+          navigate("/hosts/dashboard", { replace: true });
+          return;
+        }
+
+        if (["admin", "superadmin"].includes(data.user?.role)) {
+          navigate("/admin-panel", { replace: true });
+          return;
+        }
+
+        navigate("/", { replace: true });
       }, 1800);
     } catch (err) {
       setTone("error");
@@ -88,12 +109,6 @@ export default function ResetPassword() {
             {loading ? "Saving..." : "Save new password"}
           </button>
         </form>
-
-        <div className="resetPasswordLinks">
-          <Link to="/">User login</Link>
-          <Link to="/hosts">Host login</Link>
-          <Link to="/admin-login">Admin login</Link>
-        </div>
       </div>
     </section>
   );
