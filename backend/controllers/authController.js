@@ -57,6 +57,7 @@ export const googleAuth = async (req, res) => {
         avatar: picture || "",
         provider: "google",
         isVerified: true,
+        verifiedAt: new Date(),
       });
     } else {
       user.googleId = user.googleId || sub;
@@ -64,6 +65,7 @@ export const googleAuth = async (req, res) => {
       user.avatar = picture || user.avatar;
       user.provider = "google";
       user.isVerified = true;
+      user.verifiedAt = user.verifiedAt || new Date();
       user.emailVerificationToken = null;
       user.emailVerificationExpires = null;
       await user.save();

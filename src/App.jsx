@@ -393,6 +393,7 @@ function App() {
         />
 
         <Route path="/become-host" element={<BecomeHost language={selectedLanguage} />} />
+        <Route path="/verify-email" element={<VerifyEmail language={selectedLanguage} />} />
         <Route path="/verify-email/:token" element={<VerifyEmail language={selectedLanguage} />} />
         <Route path="/reset-password/:token" element={<ResetPassword language={selectedLanguage} />} />
         <Route path="/hosts" element={<Host language={selectedLanguage} />} />

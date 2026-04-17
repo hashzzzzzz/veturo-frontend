@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./verifyEmail.css";
 
 import API_URL from "../config/api";
 
 export default function VerifyEmail({ language = "en" }) {
-  const { token } = useParams();
+  const { token: tokenParam } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const token = searchParams.get("token") || tokenParam;
   const copy = {
     en: {
       invalidEmail: "Please enter a valid email.",
@@ -35,7 +38,13 @@ export default function VerifyEmail({ language = "en" }) {
 
     const verifyEmail = async () => {
       try {
-        const res = await fetch(`${API_URL}/auth/verify-email/${token}`);
+        if (!token) {
+          throw new Error("This verification link is invalid or expired.");
+        }
+
+        const res = await fetch(
+          `${API_URL}/auth/verify-email?token=${encodeURIComponent(token)}`
+        );
         const data = await res.json().catch(() => ({}));
 
         if (!res.ok) {
@@ -46,8 +55,19 @@ export default function VerifyEmail({ language = "en" }) {
 
         if (!isMounted) return;
 
+        if (data.token && data.user) {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          sessionStorage.setItem("showWelcomePopup", "true");
+        }
+
         setStatus("success");
-        setMessage(data.message || "Email verified successfully. You can log in now.");
+        setMessage(data.message || "Email verified successfully. You are now logged in.");
+
+        window.setTimeout(() => {
+          navigate("/", { replace: true });
+          window.location.reload();
+        }, 1200);
       } catch (error) {
         if (!isMounted) return;
 
@@ -63,7 +83,7 @@ export default function VerifyEmail({ language = "en" }) {
     return () => {
       isMounted = false;
     };
-  }, [token]);
+  }, [navigate, token]);
 
   const handleResend = async (event) => {
     event.preventDefault();

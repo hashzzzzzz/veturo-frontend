@@ -10,21 +10,26 @@ function getServerUrl() {
 
 function getEmailFromAddress() {
   if (process.env.EMAIL_FROM) return process.env.EMAIL_FROM;
+  if (process.env.GMAIL_USER) return `Veturo <${process.env.GMAIL_USER}>`;
   if (process.env.EMAIL_USER) return `Veturo <${process.env.EMAIL_USER}>`;
 
   return "Veturo <noreply@example.com>";
 }
 
 function createTransporter() {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+  const gmailUser = process.env.GMAIL_USER || process.env.EMAIL_USER;
+  const gmailAppPassword =
+    process.env.GMAIL_APP_PASSWORD || process.env.EMAIL_PASS;
+
+  if (!gmailUser || !gmailAppPassword) {
     return null;
   }
 
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: gmailUser,
+      pass: gmailAppPassword,
     },
   });
 }
@@ -61,7 +66,7 @@ function buildPasswordResetHtml(name, resetUrl) {
 }
 
 export function getEmailVerificationUrl(token) {
-  return `${getClientUrl()}/verify-email/${token}`;
+  return `${getClientUrl()}/verify-email?token=${encodeURIComponent(token)}`;
 }
 
 export function getPasswordResetUrl(token) {
@@ -79,7 +84,7 @@ export async function sendVerificationEmail({ to, name, verifyUrl }) {
     console.log("Email verification link:", verifyUrl);
     return {
       sent: false,
-      reason: "EMAIL_USER or EMAIL_PASS is not configured.",
+      reason: "GMAIL_USER or GMAIL_APP_PASSWORD is not configured.",
     };
   }
 
@@ -110,7 +115,7 @@ export async function sendPasswordResetEmail({ to, name, resetUrl }) {
     console.log("Password reset link:", resetUrl);
     return {
       sent: false,
-      reason: "EMAIL_USER or EMAIL_PASS is not configured.",
+      reason: "GMAIL_USER or GMAIL_APP_PASSWORD is not configured.",
     };
   }
 

@@ -119,6 +119,7 @@ router.post("/reset-password/:token", async (req, res) => {
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
     user.isVerified = true;
+    user.verifiedAt = user.verifiedAt || new Date();
 
     await user.save();
 
@@ -221,57 +222,103 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.get("/verify-email/:token", async (req, res) => {
-  try {
-    const token = `${req.params.token || ""}`.trim();
+const verifyEmailToken = async (token) => {
+  const cleanToken = `${token || ""}`.trim();
 
-    if (!token || token.length < 32) {
-      return res.status(400).json({
-        message: "This verification link is invalid or expired.",
-      });
-    }
+  if (!cleanToken || cleanToken.length < 32) {
+    return {
+      status: 400,
+      body: { message: "This verification link is invalid or expired." },
+    };
+  }
 
-    const tokenHash = hashVerificationToken(req.params.token);
+  const tokenHash = hashVerificationToken(cleanToken);
 
-    const user = await User.findOne({
-      emailVerificationToken: tokenHash,
-    });
+  const user = await User.findOne({
+    emailVerificationToken: tokenHash,
+  });
 
-    if (!user) {
-      return res.status(400).json({
-        message: "This verification link is invalid or expired.",
-      });
-    }
+  if (!user) {
+    return {
+      status: 400,
+      body: { message: "This verification link is invalid or expired." },
+    };
+  }
 
-    if (user.isVerified) {
-      user.emailVerificationToken = null;
-      user.emailVerificationExpires = null;
-      await user.save();
-
-      return res.status(200).json({
-        message: "Your email is already verified. You can log in.",
-      });
-    }
-
-    if (!user.emailVerificationExpires || user.emailVerificationExpires <= new Date()) {
-      user.emailVerificationToken = null;
-      user.emailVerificationExpires = null;
-      await user.save();
-
-      return res.status(400).json({
-        message: "This verification link expired. Request a fresh verification email.",
-      });
-    }
-
-    user.isVerified = true;
+  if (user.isVerified) {
     user.emailVerificationToken = null;
     user.emailVerificationExpires = null;
-
+    user.verifiedAt = user.verifiedAt || new Date();
     await user.save();
 
-    return res.status(200).json({
-      message: "Email verified successfully. You can log in now.",
-    });
+    return {
+      status: 200,
+      body: {
+        message: "Your email is already verified.",
+        token: signToken(user._id),
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          role: user.role,
+        },
+      },
+    };
+  }
+
+  if (!user.emailVerificationExpires || user.emailVerificationExpires <= new Date()) {
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    await user.save();
+
+    return {
+      status: 400,
+      body: {
+        message: "This verification link expired. Request a fresh verification email.",
+      },
+    };
+  }
+
+  user.isVerified = true;
+  user.verifiedAt = new Date();
+  user.emailVerificationToken = null;
+  user.emailVerificationExpires = null;
+
+  await user.save();
+
+  return {
+    status: 200,
+    body: {
+      message: "Email verified successfully. You are now logged in.",
+      token: signToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        role: user.role,
+      },
+    },
+  };
+};
+
+router.get("/verify-email", async (req, res) => {
+  try {
+    const result = await verifyEmailToken(req.query.token);
+
+    return res.status(result.status).json(result.body);
+  } catch (error) {
+    console.error("verify-email error:", error);
+    return res.status(500).json({ message: "Failed to verify email." });
+  }
+});
+
+router.get("/verify-email/:token", async (req, res) => {
+  try {
+    const result = await verifyEmailToken(req.params.token);
+
+    return res.status(result.status).json(result.body);
   } catch (error) {
     console.error("verify-email error:", error);
     return res.status(500).json({ message: "Failed to verify email." });
@@ -281,6 +328,10 @@ router.get("/verify-email/:token", async (req, res) => {
 router.post("/resend-verification", async (req, res) => {
   try {
     const email = `${req.body.email || ""}`.trim().toLowerCase();
+    const genericResponse = {
+      message:
+        "If that account needs verification, we sent a fresh verification email.",
+    };
 
     if (!email || !isValidEmail(email)) {
       return res.status(400).json({ message: "Please enter a valid email" });
@@ -289,22 +340,15 @@ router.post("/resend-verification", async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(200).json({
-        message:
-          "If that account needs verification, we sent a fresh verification email.",
-      });
+      return res.status(200).json(genericResponse);
     }
 
     if (user.isVerified !== false) {
-      return res.status(200).json({
-        message: "This account is already verified. You can log in.",
-      });
+      return res.status(200).json(genericResponse);
     }
 
     if (user.provider === "google" && !user.password) {
-      return res.status(200).json({
-        message: "This account uses Google sign-in. Continue with Google.",
-      });
+      return res.status(200).json(genericResponse);
     }
 
     const { rawToken, tokenHash, expiresAt } = createVerificationToken();
@@ -322,7 +366,7 @@ router.post("/resend-verification", async (req, res) => {
 
     const response = {
       message: emailResult.sent
-        ? "We sent a fresh verification link. Check your email before logging in."
+        ? genericResponse.message
         : "Email sending is not configured yet, so use the dev verification link.",
     };
 
@@ -415,6 +459,7 @@ router.post("/create-host", protect, adminOnly, async (req, res) => {
       provider: "local",
       role: "host",
       isVerified: true,
+      verifiedAt: new Date(),
     });
 
     res.status(201).json({
