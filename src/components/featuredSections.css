@@ -183,16 +183,6 @@
   background: #ffffff;
 }
 
-.card__saveOverlay {
-  background: #16a34a;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 10px;
-  border-radius: 999px;
-  box-shadow: 0 6px 14px rgba(22, 163, 74, 0.28);
-}
-
 /* INFO */
 .card__info {
   margin-top: 10px;
@@ -309,16 +299,6 @@
 
 .featured__sectionActive .featured__header h2 {
   color: #6f2cff;
-}
-
-.card__metaRowSmall {
-  margin-top: 6px;
-}
-
-.card__availabilityText {
-  font-size: 12px;
-  color: #6b7280;
-  font-weight: 600;
 }
 
 /* BIG DESKTOP */

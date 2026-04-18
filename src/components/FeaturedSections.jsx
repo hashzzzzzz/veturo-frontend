@@ -15,7 +15,7 @@ function slugify(value = "") {
     .replace(/^-+|-+$/g, "");
 }
 
-function normalizeText(value = "") {
+function normalizeCityText(value = "") {
   return value
     .toLowerCase()
     .trim()
@@ -26,7 +26,7 @@ function normalizeText(value = "") {
 }
 
 function getCanonicalCityName(city = "") {
-  const normalized = normalizeText(city);
+  const normalized = normalizeCityText(city);
 
   const cityAliases = {
     pristina: "Pristina",
@@ -56,18 +56,18 @@ function getCanonicalAirportSectionTitle(airport = "") {
 
   const airportAliases = {
     PRN: "Pristina Airport Rental",
-    TIA: "Tirana Airport Car Rental",
-    SKP: "Skopje Airport Car Rental",
-    OHD: "Ohrid Airport Car Rental",
+    TIA: "Tirana Airport Rental",
+    SKP: "Skopje Airport Rental",
+    OHD: "Ohrid Airport Rental",
   };
 
-  return airportAliases[value] || `${value} Airport Car Rental`;
+  return airportAliases[value] || `${value} Airport Rental`;
 }
 
 function getCitySectionMeta(city = "") {
   const canonicalCity = getCanonicalCityName(city);
   return {
-    title: `Rent a Car in ${canonicalCity}`,
+    title: `${canonicalCity} City Rental`,
     key: `city-${slugify(canonicalCity)}`,
   };
 }
@@ -83,56 +83,19 @@ function getAirportSectionMeta(airport = "") {
 function normalizeFeaturedSectionMeta(car) {
   const rawTitle = (car.featuredSectionTitle || car.featuredSection || "").trim();
 
-  if (car.isAirportListing && car.airport) {
-    const airportMeta = getAirportSectionMeta(car.airport);
-
-    if (!rawTitle) return airportMeta;
-
-    const normalizedRaw = normalizeText(rawTitle);
-    const airportCode = (car.airport || "").trim().toUpperCase();
-
-    if (
-      normalizedRaw.includes("airport") ||
-      normalizedRaw.includes(airportCode.toLowerCase()) ||
-      normalizedRaw.includes("pristina") ||
-      normalizedRaw.includes("tirana") ||
-      normalizedRaw.includes("skopje")
-    ) {
-      return airportMeta;
-    }
-
-    return {
-      title: rawTitle,
-      key: slugify(rawTitle),
-    };
-  }
-
-  if (car.isCityListing && car.city) {
-    const cityMeta = getCitySectionMeta(car.city);
-
-    if (!rawTitle) return cityMeta;
-
-    const normalizedRaw = normalizeText(rawTitle);
-    const normalizedCity = normalizeText(getCanonicalCityName(car.city));
-
-    if (
-      normalizedRaw.includes(normalizedCity) &&
-      (normalizedRaw.includes("city") || normalizedRaw.includes("rental"))
-    ) {
-      return cityMeta;
-    }
-
-    return {
-      title: rawTitle,
-      key: slugify(rawTitle),
-    };
-  }
-
   if (rawTitle) {
     return {
       title: rawTitle,
-      key: slugify(rawTitle),
+      key: car.featuredSectionKey || slugify(rawTitle),
     };
+  }
+
+  if (car.isAirportListing && car.airport) {
+    return getAirportSectionMeta(car.airport);
+  }
+
+  if (car.isCityListing && car.city) {
+    return getCitySectionMeta(car.city);
   }
 
   return {
@@ -606,7 +569,7 @@ export default function FeaturedSections({
       city: car?.city,
       airport: car?.airport,
       value: car?.dailyPrice,
-      currency: "USD",
+      currency: "EUR",
     });
 
     if (carId) {
@@ -774,11 +737,6 @@ export default function FeaturedSections({
                             </button>
                           </div>
 
-                          <div className="card__overlayBottom">
-                            <span className="card__saveOverlay">
-                              {car.availabilityText}
-                            </span>
-                          </div>
                         </div>
 
                         <div className="card__info">
@@ -795,15 +753,9 @@ export default function FeaturedSections({
                             <span className="card__trips">{car.trips || 0} {copy.trips}</span>
                           </div>
 
-                          <div className="card__metaRow card__metaRowSmall">
-                            <span className="card__availabilityText">
-                              {car.availabilityText}
-                            </span>
-                          </div>
-
                           <div className="card__bottom">
                             <div className="card__priceWrap">
-                              <span className="card__price">${car.dailyPrice}</span>
+                              <span className="card__price">€{car.dailyPrice}</span>
                               <span className="card__days"> {copy.perDay}</span>
                             </div>
 
@@ -882,11 +834,6 @@ export default function FeaturedSections({
                         </button>
                       </div>
 
-                      <div className="card__overlayBottom">
-                        <span className="card__saveOverlay">
-                          {car.availabilityText}
-                        </span>
-                      </div>
                     </div>
 
                     <div className="card__info">
@@ -903,15 +850,9 @@ export default function FeaturedSections({
                         <span className="card__trips">{car.trips || 0} {copy.trips}</span>
                       </div>
 
-                      <div className="card__metaRow card__metaRowSmall">
-                        <span className="card__availabilityText">
-                          {car.availabilityText}
-                        </span>
-                      </div>
-
                       <div className="card__bottom">
                         <div className="card__priceWrap">
-                          <span className="card__price">${car.dailyPrice}</span>
+                          <span className="card__price">€{car.dailyPrice}</span>
                           <span className="card__days"> {copy.perDay}</span>
                         </div>
 

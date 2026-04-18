@@ -607,7 +607,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
 
     const seoLocation = getSeoLocation(car);
     const title = `${car.title} Rent a Car in ${seoLocation} | Veturo Cars`;
-    const description = `Book ${car.title} from $${car.dailyPrice || ""}/day with Veturo. View availability, photos and host contact for rent a car in ${seoLocation}, Kosovo, Albania or North Macedonia.`;
+    const description = `Book ${car.title} from €${car.dailyPrice || ""}/day with Veturo. View availability, photos and host contact for rent a car in ${seoLocation}, Kosovo, Albania or North Macedonia.`;
     const canonicalUrl = `https://veturocars.com/cars/${id}`;
     const imageUrl = getCanonicalCarImage(car);
 
@@ -632,7 +632,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
       offers: {
         "@type": "Offer",
         price: car.dailyPrice,
-        priceCurrency: "USD",
+        priceCurrency: "EUR",
         availability: "https://schema.org/InStock",
         url: canonicalUrl,
       },
@@ -664,7 +664,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
       city: car.city,
       airport: car.airport,
       value: car.dailyPrice,
-      currency: "USD",
+      currency: "EUR",
     });
   }, [car, id]);
 
@@ -1002,7 +1002,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
               <aside className="carDetails__booking">
                 <div className="carDetails__bookingCard">
                   <div className="carDetails__priceTop">
-                    <span className="carDetails__totalPrice">${car.dailyPrice} {copy.perDay}</span>
+                    <span className="carDetails__totalPrice">€{car.dailyPrice} {copy.perDay}</span>
                   </div>
 
                   <div className="carDetails__bookingSection">

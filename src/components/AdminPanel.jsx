@@ -1718,7 +1718,7 @@ export default function AdminPanel() {
                       <article key={car._id} className="adminMiniListCard">
                         <div className="hostCreatedName">{car.title}</div>
                         <div className="hostCreatedEmail">
-                          {car.year} - {car.type} - ${car.dailyPrice}/day
+                          {car.year} - {car.type} - €{car.dailyPrice}/day
                         </div>
                         <div className="hostPanelSubtext">ssword
                           {car.owner?.name || "Unknown host"}
@@ -2320,7 +2320,7 @@ export default function AdminPanel() {
                       <p>
                         Suggested section: <strong>{suggested}</strong>
                       </p>
-                      <strong>${car.dailyPrice}/day</strong>
+                      <strong>€{car.dailyPrice}/day</strong>
 
                       <div className="hostCarActions">
                         <button
@@ -2364,11 +2364,6 @@ export default function AdminPanel() {
                         </span>
                       </div>
 
-                      <div className="card__overlayBottom">
-                        <span className="card__saveOverlay">
-                          {previewData.blockedDates?.length || 0} blocked dates
-                        </span>
-                      </div>
                     </div>
 
                     <div className="card__info">
@@ -2392,7 +2387,7 @@ export default function AdminPanel() {
                       <div className="card__bottom">
                         <div className="card__priceWrap">
                           <span className="card__price">
-                            ${previewData.dailyPrice}
+                            €{previewData.dailyPrice}
                           </span>
                           <span className="card__days"> / day</span>
                         </div>

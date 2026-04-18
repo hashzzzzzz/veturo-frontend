@@ -1019,8 +1019,8 @@ export default function HostDashboard() {
                       {car.year} • {car.type} • {car.transmission}
                     </p>
                     <p>{car.location || car.city || car.airport}</p>
-                    <strong>${car.dailyPrice}/day</strong>
-                    {car.isMonthlyAvailable && <p>${car.monthlyPrice}/month</p>}
+                    <strong>€{car.dailyPrice}/day</strong>
+                    {car.isMonthlyAvailable && <p>€{car.monthlyPrice}/month</p>}
                     {car.adminNotes ? (
                       <p className="hostAdminNote">Admin note: {car.adminNotes}</p>
                     ) : null}
