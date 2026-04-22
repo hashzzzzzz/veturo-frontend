@@ -74,6 +74,135 @@ function formatBookingDateLabel(dateString, language = "en") {
   return `${day} ${months[month - 1]}`;
 }
 
+const LISTING_TEXT_TRANSLATIONS = {
+  en: {
+    "kamera mbrapa": "Rear camera",
+    "kamera e pasme": "Rear camera",
+    "sensor parkimi": "Parking sensors",
+    "sensore parkimi": "Parking sensors",
+    "sedilje me ngrohje": "Heated seats",
+    "ulese me ngrohje": "Heated seats",
+    "karrige per femije": "Child seat",
+    "karrige per femije falas": "Free child seat",
+    "bluetooth": "Bluetooth",
+    "navigacion": "Navigation",
+    "gps": "GPS",
+    "apple carplay": "Apple CarPlay",
+    "android auto": "Android Auto",
+    "karikues telefoni": "Phone charger",
+    "usb": "USB",
+    "abs": "ABS",
+    "airbag": "Airbags",
+    "airbags": "Airbags",
+    "kontroll stabiliteti": "Stability control",
+    "kontroll terheqjeje": "Traction control",
+    "asistence frenimi": "Brake assist",
+    "klime": "Air conditioning",
+    "klima": "Air conditioning",
+    "kondicioner": "Air conditioning",
+    "automatik": "Automatic",
+    "manual": "Manual",
+    "nafte": "Diesel",
+    "dizel": "Diesel",
+    "benzine": "Petrol",
+    "benzin": "Petrol",
+    "hibrid": "Hybrid",
+    "elektrik": "Electric",
+    "ekonomike": "Economical",
+    "shume e paster": "Very clean",
+    "e paster": "Clean",
+    "veture familjare": "Family car",
+    "makine familjare": "Family car",
+    "veture komode": "Comfortable car",
+    "makine komode": "Comfortable car",
+    "ne gjendje te mire": "In good condition",
+    "e pershtatshme per udhetime te gjata": "Suitable for long trips",
+    "e pershtatshme per qytet": "Suitable for city driving",
+    "hapesire bagazhi": "Luggage space",
+    "bagazh i madh": "Large trunk",
+  },
+  al: {
+    "rear camera": "Kamera mbrapa",
+    "backup camera": "Kamera mbrapa",
+    "parking sensors": "Sensore parkimi",
+    "heated seats": "Ulese me ngrohje",
+    "child seat": "Karrige per femije",
+    "free child seat": "Karrige per femije falas",
+    "bluetooth": "Bluetooth",
+    "navigation": "Navigacion",
+    "gps": "GPS",
+    "apple carplay": "Apple CarPlay",
+    "android auto": "Android Auto",
+    "phone charger": "Karikues telefoni",
+    "usb": "USB",
+    "abs": "ABS",
+    "airbags": "Airbag",
+    "airbag": "Airbag",
+    "stability control": "Kontroll stabiliteti",
+    "traction control": "Kontroll terheqjeje",
+    "brake assist": "Asistence frenimi",
+    "air conditioning": "Klime",
+    "a/c": "Klime",
+    "automatic": "Automatik",
+    "manual": "Manual",
+    "diesel": "Dizel",
+    "petrol": "Benzine",
+    "gasoline": "Benzine",
+    "hybrid": "Hibrid",
+    "electric": "Elektrik",
+    "economical": "Ekonomike",
+    "very clean": "Shume e paster",
+    "clean": "E paster",
+    "family car": "Veture familjare",
+    "comfortable car": "Veture komode",
+    "in good condition": "Ne gjendje te mire",
+    "suitable for long trips": "E pershtatshme per udhetime te gjata",
+    "suitable for city driving": "E pershtatshme per qytet",
+    "luggage space": "Hapesire bagazhi",
+    "large trunk": "Bagazh i madh",
+  },
+};
+
+function normalizeListingText(value = "") {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w\s/+.-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function matchCase(original = "", translated = "") {
+  if (!original || !translated) return translated;
+  if (original === original.toUpperCase()) return translated.toUpperCase();
+  if (original[0] === original[0].toUpperCase()) {
+    return `${translated[0]?.toUpperCase() || ""}${translated.slice(1)}`;
+  }
+  return translated;
+}
+
+function translateListingText(value = "", language = "en") {
+  if (!value) return "";
+
+  const dictionary = LISTING_TEXT_TRANSLATIONS[normalizeLanguage(language)] || {};
+  const original = String(value).trim();
+  const normalized = normalizeListingText(original);
+
+  if (!normalized) return original;
+  if (dictionary[normalized]) return matchCase(original, dictionary[normalized]);
+
+  const translated = Object.entries(dictionary).reduce((text, [source, target]) => {
+    const escapedSource = source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return text.replace(new RegExp(`\\b${escapedSource}\\b`, "gi"), (match) =>
+      matchCase(match, target)
+    );
+  }, original);
+
+  return translated;
+}
+
 function formatCalendarTitle(date, language = "en") {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
     return "";
@@ -957,7 +1086,7 @@ export default function CarDetails({ favorites = [], language = "en" }) {
 
                 <div className="carDetails__section">
                   <h2>{copy.aboutCar}</h2>
-                  <p>{car.description}</p>
+                  <p>{translateListingText(car.description, normalizedLanguage)}</p>
                 </div>
 
                 <div className="carDetails__section">
@@ -966,21 +1095,27 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                   <div className="carDetails__featureBlock">
                     <h4>{copy.safety}</h4>
                     <ul>
-                      {car.features?.safety?.map((item) => <li key={item}>{item}</li>)}
+                      {car.features?.safety?.map((item) => (
+                        <li key={item}>{translateListingText(item, normalizedLanguage)}</li>
+                      ))}
                     </ul>
                   </div>
 
                   <div className="carDetails__featureBlock">
                     <h4>{copy.convenience}</h4>
                     <ul>
-                      {car.features?.convenience?.map((item) => <li key={item}>{item}</li>)}
+                      {car.features?.convenience?.map((item) => (
+                        <li key={item}>{translateListingText(item, normalizedLanguage)}</li>
+                      ))}
                     </ul>
                   </div>
 
                   <div className="carDetails__featureBlock">
                     <h4>{copy.tech}</h4>
                     <ul>
-                      {car.features?.tech?.map((item) => <li key={item}>{item}</li>)}
+                      {car.features?.tech?.map((item) => (
+                        <li key={item}>{translateListingText(item, normalizedLanguage)}</li>
+                      ))}
                     </ul>
                   </div>
                 </div>
