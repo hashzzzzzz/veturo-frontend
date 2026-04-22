@@ -975,7 +975,9 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                 <div className="carDetails__sub">
                   <span>{car.year}</span>
                   <span>•</span>
-                  <span>{car.type}</span>
+                  <span>
+                    {translateListingText(car.type, normalizedLanguage)}
+                  </span>
                   <span>•</span>
                   <span>{car.rating} ★</span>
                   <span>({car.trips} {copy.trips})</span>
@@ -983,8 +985,12 @@ export default function CarDetails({ favorites = [], language = "en" }) {
 
                 <div className="carDetails__chips">
                   <span>{car.seats} {copy.seats}</span>
-                  <span>{car.fuelType}</span>
-                  <span>{car.transmission}</span>
+                  <span>
+                    {translateListingText(car.fuelType, normalizedLanguage)}
+                  </span>
+                  <span>
+                    {translateListingText(car.transmission, normalizedLanguage)}
+                  </span>
                 </div>
 
                 <div className="carDetails__section">
@@ -1095,8 +1101,10 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                   <div className="carDetails__featureBlock">
                     <h4>{copy.safety}</h4>
                     <ul>
-                      {car.features?.safety?.map((item) => (
-                        <li key={item}>{translateListingText(item, normalizedLanguage)}</li>
+                      {car.features?.safety?.map((item, index) => (
+                        <li key={item}>
+                          {translateListingText(item, normalizedLanguage)}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -1104,8 +1112,10 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                   <div className="carDetails__featureBlock">
                     <h4>{copy.convenience}</h4>
                     <ul>
-                      {car.features?.convenience?.map((item) => (
-                        <li key={item}>{translateListingText(item, normalizedLanguage)}</li>
+                      {car.features?.convenience?.map((item, index) => (
+                        <li key={item}>
+                          {translateListingText(item, normalizedLanguage)}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -1113,8 +1123,10 @@ export default function CarDetails({ favorites = [], language = "en" }) {
                   <div className="carDetails__featureBlock">
                     <h4>{copy.tech}</h4>
                     <ul>
-                      {car.features?.tech?.map((item) => (
-                        <li key={item}>{translateListingText(item, normalizedLanguage)}</li>
+                      {car.features?.tech?.map((item, index) => (
+                        <li key={item}>
+                          {translateListingText(item, normalizedLanguage)}
+                        </li>
                       ))}
                     </ul>
                   </div>
