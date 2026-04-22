@@ -545,7 +545,12 @@ export default function FeaturedSections({
   }, [windowWidth]);
 
   const hasSearchSelection = useMemo(() => {
-    return !!(searchData?.city?.trim() || searchData?.airport?.trim());
+    return !!(
+      searchData?.city?.trim() ||
+      searchData?.airport?.trim() ||
+      searchData?.fromDate ||
+      searchData?.untilDate
+    );
   }, [searchData]);
 
   const handleClickPreview = (car) => {

@@ -35,6 +35,10 @@ function buildManualCityItem(value = "") {
   };
 }
 
+function hasDateSelection(fromDate, untilDate) {
+  return Boolean(fromDate || untilDate);
+}
+
 const SearchDateInput = forwardRef(function SearchDateInput(
   { value, onClick, placeholder, className },
   ref
@@ -128,7 +132,7 @@ export default function Main({
   const [options, setOptions] = useState([]);
   const [loadingOptions, setLoadingOptions] = useState(false);
   const [selectedOption, setSelectedOption] = useState(
-    initialSearch
+    initialSearch?.where || initialSearch?.city || initialSearch?.airport
       ? {
           id: initialSearch.airport || initialSearch.city || initialSearch.where || "",
           type: initialSearch.type || (initialSearch.airport ? "airport" : "city"),
@@ -396,6 +400,36 @@ export default function Main({
     };
   }
 
+  function createDateOnlyPayload(nextFromDate = fromDate, nextUntilDate = untilDate) {
+    return {
+      where: "",
+      type: "dates",
+      city: "",
+      airport: "",
+      targetSectionKey: "",
+      fromDate: nextFromDate,
+      untilDate: nextUntilDate,
+    };
+  }
+
+  function submitDateOnlySearch(nextFromDate = fromDate, nextUntilDate = untilDate) {
+    setSearchError("");
+
+    if (!hasDateSelection(nextFromDate, nextUntilDate)) {
+      resetSearch();
+      return;
+    }
+
+    const payload = createDateOnlyPayload(nextFromDate, nextUntilDate);
+
+    trackEvent("search_cars", {
+      search_type: payload.type,
+      has_dates: Boolean(payload.fromDate && payload.untilDate),
+    });
+
+    onSearchSubmit?.(payload);
+  }
+
   function submitWithItem(item, nextFromDate = fromDate, nextUntilDate = untilDate) {
     if (!item) return;
 
@@ -455,6 +489,13 @@ export default function Main({
     const bestItem = findBestOptionFromWhere();
 
     if (!bestItem) {
+      if (hasDateSelection(fromDate, untilDate)) {
+        submitDateOnlySearch(fromDate, untilDate);
+        setWhereOpen(false);
+        setActivePanel(null);
+        return;
+      }
+
       setSearchError(copy.selectFirst);
       return;
     }
@@ -476,7 +517,7 @@ export default function Main({
     setFromDate(date);
 
     if (!where.trim()) {
-      setSearchError(copy.selectFirst);
+      submitDateOnlySearch(date, nextUntilDate);
       if (isMobileViewport) setActivePanel(null);
       return;
     }
@@ -494,7 +535,7 @@ export default function Main({
     setUntilDate(date);
 
     if (!where.trim()) {
-      setSearchError(copy.selectFirst);
+      submitDateOnlySearch(fromDate, date);
       if (isMobileViewport) setActivePanel(null);
       return;
     }
@@ -542,6 +583,7 @@ export default function Main({
     setSearchError("");
 
     if (!selectedOption) {
+      submitDateOnlySearch(null, untilDate);
       return;
     }
 
@@ -557,6 +599,7 @@ export default function Main({
     setSearchError("");
 
     if (!selectedOption) {
+      submitDateOnlySearch(fromDate, null);
       return;
     }
 
