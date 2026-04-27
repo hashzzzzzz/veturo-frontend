@@ -10,8 +10,16 @@ import carRoutes from "./routes/carRoutes.js";
 dotenv.config();
 
 const app = express();
-const defaultClientUrl = "http://localhost:5173";
-const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || defaultClientUrl)
+const defaultClientUrls = [
+  "http://localhost:5173",
+  "https://veturocars.com",
+  "https://www.veturocars.com",
+];
+const configuredOrigins =
+  process.env.CLIENT_URLS ||
+  process.env.CLIENT_URL ||
+  defaultClientUrls.join(",");
+const allowedOrigins = configuredOrigins
   .split(",")
   .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);

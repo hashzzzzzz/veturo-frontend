@@ -1,16 +1,39 @@
-# React + Vite
+# Veturo Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Frontend environment
 
-Currently, two official plugins are available:
+Set the frontend API origin in Vercel:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```env
+VITE_API_URL=https://veturo-frontend-e7pn.onrender.com
+```
 
-## React Compiler
+For local development, the frontend falls back to `http://localhost:5000` when `VITE_API_URL` is not set.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Do not add backend-only secrets to the frontend environment. Keep these on Render only:
 
-## Expanding the ESLint configuration
+- `MONGO_URL`
+- `JWT_SECRET`
+- `CLOUDINARY_API_SECRET`
+- `GMAIL_APP_PASSWORD`
+- `PORT`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Backend CORS
+
+The backend should allow these frontend origins:
+
+- `https://veturocars.com`
+- `https://www.veturocars.com`
+- `http://localhost:5173`
+
+On Render, set `CLIENT_URLS` to:
+
+```env
+CLIENT_URLS=http://localhost:5173,https://veturocars.com,https://www.veturocars.com
+```
+
+Keep `CLIENT_URL` pointed at your primary frontend URL if you use email verification or password reset links:
+
+```env
+CLIENT_URL=https://veturocars.com
+```
