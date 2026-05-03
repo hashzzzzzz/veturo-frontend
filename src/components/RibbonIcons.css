@@ -50,6 +50,26 @@
   stroke-width: 2;
 }
 
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .ribbonIcons__wrap {
+    gap: 10px;
+  }
+
+  .ribbonIcons__item {
+    height: 48px;
+    padding: 0 15px;
+    border-radius: 16px;
+    font-size: 16px;
+    gap: 8px;
+  }
+
+  .ribbonIcons__icon,
+  .ribbonIcons__icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
 @media (max-width: 768px) {
   .ribbonIcons {
     margin-top: 0px;

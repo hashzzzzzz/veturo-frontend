@@ -133,6 +133,33 @@
   color: #111;
 }
 
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .footer {
+    margin-top: 48px;
+    padding: 34px 0;
+  }
+
+  .footer__container {
+    max-width: 1080px;
+    padding: 0 28px;
+  }
+
+  .footer__tabs {
+    gap: 18px;
+  }
+
+  .footer__grid {
+    gap: 10px 28px;
+    margin-top: 18px;
+  }
+
+  .footer__bottom {
+    margin-top: 32px;
+    gap: 18px;
+    padding-top: 22px;
+  }
+}
+
 @media (max-width: 1178px) {
   .footer__grid {
     gap: 12px 24px;

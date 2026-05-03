@@ -496,6 +496,79 @@
   stroke-width: 2.4;
 }
 
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .hero {
+    max-width: 980px;
+    padding-bottom: 32px;
+  }
+
+  .hero__card {
+    min-height: 398px;
+    border-radius: 24px;
+  }
+
+  .hero__content {
+    min-height: 398px;
+    padding: 34px 22px 28px;
+  }
+
+  .hero__text {
+    max-width: 760px;
+  }
+
+  .hero__eyebrow {
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+
+  .hero__searchWrap {
+    max-width: 1000px;
+    margin-top: 22px;
+  }
+
+  .hero__searchShell {
+    max-width: 920px;
+  }
+
+  .hero__search {
+    border-radius: 20px;
+    padding: 8px 8px 8px 14px;
+    grid-template-columns: 2fr 1px 1.1fr 1px 1.1fr auto;
+  }
+
+  .search__item {
+    padding: 0 12px;
+  }
+
+  .search__item label {
+    margin-bottom: 5px;
+    font-size: 12px;
+  }
+
+  .search__item input,
+  .search__dateInput {
+    font-size: 16px;
+  }
+
+  .search__item span {
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  .search__divider {
+    height: 48px;
+  }
+
+  .search__button {
+    height: 54px;
+    min-width: 116px;
+    margin-left: 8px;
+    padding: 0 20px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+}
+
 @media (max-width: 900px) {
   .hero {
     max-width: calc(100% - 20px);

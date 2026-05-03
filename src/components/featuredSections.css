@@ -301,6 +301,62 @@
   color: #6f2cff;
 }
 
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .featured {
+    max-width: 1080px;
+    margin: 32px auto;
+    padding: 0 34px;
+  }
+
+  .featured__section {
+    margin-bottom: 36px;
+  }
+
+  .featured__header {
+    margin-bottom: 14px;
+  }
+
+  .featured__header h2 {
+    font-size: 20px;
+  }
+
+  .featured__row {
+    gap: 16px;
+  }
+
+  .card__imageWrap {
+    height: 168px;
+  }
+
+  .card__info {
+    margin-top: 9px;
+  }
+
+  .card__title {
+    font-size: 16px;
+  }
+
+  .card__subline,
+  .card__rating,
+  .card__trips,
+  .card__days {
+    font-size: 12px;
+  }
+
+  .card__bottom {
+    margin-top: 10px;
+  }
+
+  .card__price {
+    font-size: 17px;
+  }
+
+  .card__bookBtn {
+    padding: 8px 13px;
+    font-size: 12px;
+  }
+}
+
 /* BIG DESKTOP */
 @media (min-width: 1101px) {
   .featured {
